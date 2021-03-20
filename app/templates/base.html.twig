@@ -19,7 +19,7 @@
 
             .sidenav {
                 height: 100%;
-                width: 0;
+                width: 250px;
                 position: fixed;
                 z-index: 1;
                 top: 0;
@@ -56,6 +56,15 @@
                 .sidenav a {font-size: 18px;}
             }
         </style>
+        <script>
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+            }
+        </script>
     </head>
     <body>
 
@@ -67,19 +76,9 @@
         <a href="#">Contact</a>
     </div>
 
-    <h2>Animated Sidenav Example</h2>
-    <p>Click on the element below to open the side navigation menu.</p>
-    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; menu</span>
 
-    <script>
-        function openNav() {
-            document.getElementById("mySidenav").style.width = "250px";
-        }
 
-        function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-        }
-    </script>
         {% block body %}{% endblock %}
     </body>
 </html>
