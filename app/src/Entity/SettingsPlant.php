@@ -45,7 +45,7 @@ class SettingsPlant
     /**
      * @ORM\Column(type="integer")
      */
-    private $light_duraion;
+    private $light_duration;
 
     /**
      * @ORM\Column(type="integer")
@@ -117,14 +117,14 @@ class SettingsPlant
         return $this;
     }
 
-    public function getLightDuraion(): ?int
+    public function getLightDuration(): ?int
     {
-        return $this->light_duraion;
+        return $this->light_duration;
     }
 
-    public function setLightDuraion(int $light_duraion): self
+    public function setLightDuration(int $light_duration): self
     {
-        $this->light_duraion = $light_duraion;
+        $this->light_duration = $light_duration;
 
         return $this;
     }
