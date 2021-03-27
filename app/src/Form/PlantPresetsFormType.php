@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\SettingsPlant;
+use App\Entity\PlantPresets;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class SettingsPlantFormType extends AbstractType
+class PlantPresetsFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -38,7 +38,7 @@ class SettingsPlantFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => SettingsPlant::class,
+            'data_class' => PlantPresets::class,
         ]);
     }
 }

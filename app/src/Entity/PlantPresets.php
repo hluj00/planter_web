@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\SettingsPlantRepository;
+use App\Repository\PlantPresetsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SettingsPlantRepository::class)
  */
-class SettingsPlant
+class PlantPresets
 {
     /**
      * @ORM\Id

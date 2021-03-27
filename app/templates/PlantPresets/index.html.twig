@@ -31,12 +31,12 @@
                     <td>{{ c.temperature }}</td>
                     <td>{{ c.lightLevel }}</td>
                     <td>{{ c.lightDuration }}</td>
-                    <td><a href="{{ path('settings_plant_edit' , {id: c.id}) }}">edituj</a></td>
+                    <td><a href="{{ path('plant_presets_edit' , {id: c.id}) }}">edituj</a></td>
                 </tr>
             {% endfor %}
             <tbody>
         </table>
     </div>
-    <a href="{{ path('settings_plant_new') }}">vytvorit nový</a>
+    <a href="{{ path('plant_presets_new') }}">vytvorit nový</a>
 </div>
 {% endblock %}

@@ -30,7 +30,7 @@ class Planter
     /**
      * @ORM\Column(type="integer")
      */
-    private $settings_plant_id;
+    private $plant_presets_id;
 
     public function getId(): ?int
     {
@@ -61,14 +61,14 @@ class Planter
         return $this;
     }
 
-    public function getSettingsPlantId(): ?int
+    public function getPlantPresetsId(): ?int
     {
-        return $this->settings_plant_id;
+        return $this->plant_presets_id;
     }
 
-    public function setSettingsPlantId(int $settings_plant_id): self
+    public function setPlantPresetsId(int $plant_presets_id): self
     {
-        $this->settings_plant_id = $settings_plant_id;
+        $this->plant_presets_id = $plant_presets_id;
 
         return $this;
     }
