@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -rf app/var/cache/*
+rm -rf ../app/var/cache/*
