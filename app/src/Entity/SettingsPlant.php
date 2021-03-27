@@ -18,11 +18,6 @@ class SettingsPlant
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $id_settings_plant;
-
-    /**
      * @ORM\Column(type="string", length=45)
      */
     private $name;
@@ -52,21 +47,10 @@ class SettingsPlant
      */
     private $user_id;
 
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdSettingsPlant(): ?int
-    {
-        return $this->id_settings_plant;
-    }
-
-    public function setIdSettingsPlant(int $id_settings_plant): self
-    {
-        $this->id_settings_plant = $id_settings_plant;
-
-        return $this;
     }
 
     public function getName(): ?string

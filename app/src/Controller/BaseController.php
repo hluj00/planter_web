@@ -16,7 +16,4 @@ class BaseController extends AbstractController
     {
         return parent::getUser();
     }
-
-
-
 }

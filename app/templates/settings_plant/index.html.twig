@@ -11,10 +11,32 @@
 <div class="example-wrapper">
     <h1>Hello {{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/pi/projects/planter_web/app/src/Controller/SettingsPlantController.php'|file_link(0) }}">src/Controller/SettingsPlantController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/pi/projects/planter_web/app/templates/settings_plant/index.html.twig'|file_link(0) }}">templates/settings_plant/index.html.twig</a></code></li>
-    </ul>
+    <div class="table-wrapper">
+        <table class="fl-table">
+            <thead>
+            <tr>
+                <th>name</th>
+                <th>moisture</th>
+                <th>temperature</th>
+                <th>min light level</th>
+                <th>light duration</th>
+                <th>editace</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for c in settings %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.moisture }}</td>
+                    <td>{{ c.temperature }}</td>
+                    <td>{{ c.lightLevel }}</td>
+                    <td>{{ c.lightDuration }}</td>
+                    <td><a href="{{ path('settings_plant_edit' , {id: c.id}) }}">edituj</a></td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </div>
+    <a href="{{ path('settings_plant_new') }}">vytvorit nový</a>
 </div>
 {% endblock %}

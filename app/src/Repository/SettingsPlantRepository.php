@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\SettingsPlant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +20,35 @@ class SettingsPlantRepository extends ServiceEntityRepository
         parent::__construct($registry, SettingsPlant::class);
     }
 
-    // /**
+    /**
     //  * @return SettingsPlant[] Returns an array of SettingsPlant objects
     //  */
-    /*
-    public function findByExampleField($value)
+    public function findByUserId($value)
     {
         return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
+            ->andWhere('s.user_id = :val')
             ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
+            ->orderBy('s.id_settings_plant', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?SettingsPlant
+
+
+    public function findOneByIdAndUserId($id): ?SettingsPlant
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        try {
+            return $this->createQueryBuilder('s')
+                ->andWhere('s.id_settings_plant = :val')
+                ->setParameter('val', $id)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+            // throw err neni unique
+        }
     }
-    */
+
 }

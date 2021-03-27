@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -40,7 +41,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id_user;
+    private $id;
 
 
     /**
@@ -111,7 +112,7 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+         //$this->setPassword(null);
     }
 
     public function getEmail(): ?string
@@ -128,6 +129,6 @@ class User implements UserInterface
 
     public function getId(): ?int
     {
-        return $this->id_user;
+        return $this->id;
     }
 }
