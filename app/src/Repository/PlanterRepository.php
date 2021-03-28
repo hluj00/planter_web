@@ -19,32 +19,34 @@ class PlanterRepository extends ServiceEntityRepository
         parent::__construct($registry, Planter::class);
     }
 
-    // /**
-    //  * @return Planter[] Returns an array of Planter objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return Planter[] Returns an array of Planter objects
+      */
+    public function findByUserId($value)
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
+            ->andWhere('p.user_id = :val')
             ->setParameter('val', $value)
             ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Planter
+
+    /**
+     * @param $value
+     * @return Planter|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneById($value): ?Planter
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
+            ->andWhere('p.id = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+
 }

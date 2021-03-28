@@ -32,6 +32,11 @@ class Planter
      */
     private $plant_presets_id;
 
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $color;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,4 +77,18 @@ class Planter
 
         return $this;
     }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor($color): self
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+
 }

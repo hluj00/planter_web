@@ -1,6 +1,6 @@
 body {
     font-family: "Lato", sans-serif;
-    background: #4FC3A1;
+    background: #ececec;
 }
 
 .sidenav {
@@ -49,6 +49,8 @@ body {
 .content {
     margin-left: 250px;
 }
+
+.example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
 
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
