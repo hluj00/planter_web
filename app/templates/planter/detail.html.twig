@@ -5,8 +5,11 @@
 {% block javascripts %}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-            b = {{ data2|raw }}
-            c = {{ data2|raw }}
+        airHumidityData = {{ airHumidityData|raw }}
+        airTemperatureData = {{ airTemperatureData|raw }}
+        waterLevelData = {{ waterLevelData|raw }}
+        lightLevelData = {{ lightLevelData|raw }}
+        soilMoistureData = {{ soilMoistureData|raw }}
     </script>
     <script type="text/javascript" src="{{ asset('assets/js/graphs.js') }}"></script>
     <style>
@@ -19,20 +22,24 @@
 {% block body %}
 
     <div class="example-wrapper">
-    <h1>Register</h1>
+    <h1>Planter: {{ planterName }}</h1>
 
     {{ form_start(PlanterForm) }}
         {{ form_widget(PlanterForm.name) }}
         {{ form_widget(PlanterForm.plant_presets_id) }}
         {{ form_widget(PlanterForm.color) }}
         {{ form_widget(PlanterForm.save) }}
+        {{ form_widget(PlanterForm.delete) }}
     {{ form_end(PlanterForm) }}
 
-        <h1>My Web Page</h1>
+        <h2>data</h2>
 
 
         <div id="chart_div" class = "graph"></div>
         <div id="chart_div2" class = "graph"></div>
+        <div id="chart_div3" class = "graph"></div>
+        <div id="chart_div4" class = "graph"></div>
+        <div id="chart_div5" class = "graph"></div>
 
     </div>
 

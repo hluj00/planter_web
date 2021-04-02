@@ -19,22 +19,19 @@ class SoilMoistureRepository extends ServiceEntityRepository
         parent::__construct($registry, SoilMoisture::class);
     }
 
-    // /**
-    //  * @return SoilMoisture[] Returns an array of SoilMoisture objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return SoilMoisture[] Returns an array of SoilMoisture objects
+      */
+    public function findByPlanterId($value)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :val')
             ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
+            ->orderBy('a.id', 'ASC')
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?SoilMoisture

@@ -19,22 +19,19 @@ class WaterLevelRepository extends ServiceEntityRepository
         parent::__construct($registry, WaterLevel::class);
     }
 
-    // /**
-    //  * @return WaterLevel[] Returns an array of WaterLevel objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return WaterLevel[] Returns an array of WaterLevel objects
+      */
+    public function findByPlanterId($value)
     {
-        return $this->createQueryBuilder('w')
-            ->andWhere('w.exampleField = :val')
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :val')
             ->setParameter('val', $value)
-            ->orderBy('w.id', 'ASC')
-            ->setMaxResults(10)
+            ->orderBy('a.id', 'ASC')
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?WaterLevel

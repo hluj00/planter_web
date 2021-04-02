@@ -19,22 +19,20 @@ class AirHumidityRepository extends ServiceEntityRepository
         parent::__construct($registry, AirHumidity::class);
     }
 
-    // /**
-    //  * @return AirHumidity[] Returns an array of AirHumidity objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return AirHumidity[] Returns an array of AirHumidity objects
+      */
+    public function findByPlanterId($value)
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
+            ->andWhere('a.planter_id = :val')
             ->setParameter('val', $value)
             ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?AirHumidity

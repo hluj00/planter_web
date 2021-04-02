@@ -12,49 +12,110 @@ function drawCurveTypes() {
 
 
 
-    stringToDate(b);
-    stringToDate(c);
+    stringToDate(airHumidityData);
+    stringToDate(airTemperatureData);
+    stringToDate(waterLevelData);
+    stringToDate(lightLevelData);
+    stringToDate(soilMoistureData);
 
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', 'Date');
-    data.addColumn('number', 'Stock low');
-    data.addRows(b);
+    var airHumData = new google.visualization.DataTable();
+    airHumData.addColumn('datetime', 'Date');
+    airHumData.addColumn('number', 'Stock low');
+    airHumData.addRows(airHumidityData);
+
+    var airTempData = new google.visualization.DataTable();
+    airTempData.addColumn('datetime', 'Date');
+    airTempData.addColumn('number', 'Stock low');
+    airTempData.addRows(airTemperatureData);
+
+    var waterLvlData = new google.visualization.DataTable();
+    waterLvlData.addColumn('datetime', 'Date');
+    waterLvlData.addColumn('number', 'Stock low');
+    waterLvlData.addRows(waterLevelData);
+
+    var lightLvlData = new google.visualization.DataTable();
+    lightLvlData.addColumn('datetime', 'Date');
+    lightLvlData.addColumn('number', 'Stock low');
+    lightLvlData.addRows(lightLevelData);
+
+    var soilMoistData = new google.visualization.DataTable();
+    soilMoistData.addColumn('datetime', 'Date');
+    soilMoistData.addColumn('number', 'Stock low');
+    soilMoistData.addRows(soilMoistureData);
 
 
-    var data2 = new google.visualization.DataTable();
-    data2.addColumn('datetime', 'Date');
-    data2.addColumn('number', 'Stock low');
-    data2.addRows(c);
 
 
-
-
-    var options = {
+    var AirTempOptions = {
         hAxis: {
-            title: 'Time'
+            title: 'time'
         },
         vAxis: {
-            title: 'Popularity'
+            title: 'air temperature'
         },
         series: {
             1: {curveType: 'function'}
         }
     };
 
-    var options2 = {
+    var AirHumOptions = {
         hAxis: {
-            title: 'Time'
+            title: 'time'
         },
         vAxis: {
-            title: 'test'
+            title: 'air humidity'
         },
         series: {
             1: {curveType: 'function'}
         }
     };
 
-    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-    var chart2 = new google.visualization.LineChart(document.getElementById('chart_div2'));
-    chart.draw(data, options);
-    chart2.draw(data2, options2);
+    var waterLvlOptions = {
+        hAxis: {
+            title: 'time'
+        },
+        vAxis: {
+            title: 'water level'
+        },
+        series: {
+            1: {curveType: 'function'}
+        }
+    };
+
+    var lightLvlOptions = {
+        hAxis: {
+            title: 'time'
+        },
+        vAxis: {
+            title: 'light'
+        },
+        series: {
+            1: {curveType: 'function'}
+        }
+    };
+
+    var soilMoistOptions = {
+        hAxis: {
+            title: 'time'
+        },
+        vAxis: {
+            title: 'soil moisture'
+        },
+        series: {
+            1: {curveType: 'function'}
+        }
+    };
+
+
+    var AirTempChart = new google.visualization.LineChart(document.getElementById('chart_div'));
+    var AirHumChart = new google.visualization.LineChart(document.getElementById('chart_div2'));
+    var waterLvlChart = new google.visualization.LineChart(document.getElementById('chart_div3'));
+    var lightLvlChart = new google.visualization.LineChart(document.getElementById('chart_div4'));
+    var soilMoistChart = new google.visualization.LineChart(document.getElementById('chart_div5'));
+
+    AirTempChart.draw(airHumData, AirTempOptions);
+    AirHumChart.draw(airTempData, AirHumOptions);
+    waterLvlChart.draw(waterLvlData, waterLvlOptions);
+    lightLvlChart.draw(lightLvlData, lightLvlOptions);
+    soilMoistChart.draw(soilMoistData, soilMoistOptions);
 }

@@ -78,9 +78,7 @@ class PlantPresetsController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-
             $delete = $form->get('delete')->isClicked();
-            dump('kokos');
             if ($delete){
                 $entityManager->remove($SettingsPlant);
             }else{
@@ -92,7 +90,6 @@ class PlantPresetsController extends BaseController
                 $SettingsPlant->setUserId($this->getUser()->getId());
             }
             $entityManager->flush();
-            // do anything else you need here, like send an email
 
             return $this->redirectToRoute('plant_presets');
         }

@@ -19,22 +19,19 @@ class LightLevelRepository extends ServiceEntityRepository
         parent::__construct($registry, LightLevel::class);
     }
 
-    // /**
-    //  * @return LightLevel[] Returns an array of LightLevel objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return LightLevel[] Returns an array of LightLevel objects
+      */
+    public function findByPlanterId($value)
     {
-        return $this->createQueryBuilder('l')
-            ->andWhere('l.exampleField = :val')
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :val')
             ->setParameter('val', $value)
-            ->orderBy('l.id', 'ASC')
-            ->setMaxResults(10)
+            ->orderBy('a.id', 'ASC')
             ->getQuery()
             ->getResult()
-        ;
+            ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?LightLevel
