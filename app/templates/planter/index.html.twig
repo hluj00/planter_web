@@ -69,7 +69,8 @@
             <a href="{{ path('planter_detail' , {id: p.id}) }}">
                 <div class="column" style="background-color:{{ p.color }}; color: #111111;" >
                     <h2>{{ p.getName() }}</h2>
-                    <p>{{ presets[p.getPlantPresetsId].name }}</p>
+                    <p style="color: #111111;">{{ presets[p.getPlantPresetsId].name }}</p>
+                    <a href="{{ path('planter_edit' , {id: p.getId}) }}"><button>editovat nastavení</button></a>
                 </div>
             </a>
         {% endfor %}

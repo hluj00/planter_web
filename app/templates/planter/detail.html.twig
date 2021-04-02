@@ -22,15 +22,7 @@
 {% block body %}
 
     <div class="example-wrapper">
-    <h1>Planter: {{ planterName }}</h1>
-
-    {{ form_start(PlanterForm) }}
-        {{ form_widget(PlanterForm.name) }}
-        {{ form_widget(PlanterForm.plant_presets_id) }}
-        {{ form_widget(PlanterForm.color) }}
-        {{ form_widget(PlanterForm.save) }}
-        {{ form_widget(PlanterForm.delete) }}
-    {{ form_end(PlanterForm) }}
+    <h1>Planter: {{ planter.getName }}</h1>
 
         <h2>data</h2>
 
@@ -40,6 +32,8 @@
         <div id="chart_div3" class = "graph"></div>
         <div id="chart_div4" class = "graph"></div>
         <div id="chart_div5" class = "graph"></div>
+
+        <a href="{{ path('planter_edit' , {id: planter.getId}) }}"><button>editovat</button></a>
 
     </div>
 

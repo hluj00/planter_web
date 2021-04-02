@@ -95,6 +95,48 @@ class PlanterController extends BaseController
 
 
         $userId = $this->getUser()->getId();
+        $planter = $planterRepository->findOneById($id);
+
+
+        $airHumidityData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
+        $airTemperatureData = $this->mesuremetsToArray($airHumidityRepository->findByPlanterId($id));
+        $waterLevelData = $this->mesuremetsToArray($waterLevelRepository->findByPlanterId($id));
+        $lightLevelData = $this->mesuremetsToArray($lightLevelRepository->findByPlanterId($id));
+        $soilMoistureData = $this->mesuremetsToArray($soilMoistureRepository->findByPlanterId($id));
+
+        return $this->render('planter/detail.html.twig', [
+            'planter' => $planter,
+            'airHumidityData' => $serializer->serialize($airHumidityData, 'json'),
+            'airTemperatureData' => $serializer->serialize($airTemperatureData, 'json'),
+            'waterLevelData' => $serializer->serialize($waterLevelData, 'json'),
+            'lightLevelData' => $serializer->serialize($lightLevelData, 'json'),
+            'soilMoistureData' => $serializer->serialize($soilMoistureData, 'json'),
+        ]);
+    }
+
+    private function mesuremetsToArray($mesurements): array
+    {
+        $data = [];
+        foreach ($mesurements as $airTemperature){
+            $date =$airTemperature->getDate()->format('Y-m-d H:i:s');
+
+            $data[] = [$date, $airTemperature->getValue()];
+        }
+        return $data;
+    }
+
+    /**
+     * @Route("/planter/edit/{id}", name="planter_edit")
+     */
+    public function edit(
+        Request $request,
+        PlantPresetsRepository $plantPresetsRepository,
+        PlanterRepository $planterRepository,
+        $id): Response
+    {
+
+
+        $userId = $this->getUser()->getId();
         $presets = $plantPresetsRepository->findByUserId($userId);
         $planter = $planterRepository->findOneById($id);
         $form = $this->createForm(PlanterFormType::class, $planter, ['trait_choices' => $presets]);
@@ -114,37 +156,16 @@ class PlanterController extends BaseController
 
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($planter);
-                }
+            }
             $entityManager->flush();
 
             return $this->redirectToRoute('planter');
         }
 
-        $airHumidityData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
-        $airTemperatureData = $this->mesuremetsToArray($airHumidityRepository->findByPlanterId($id));
-        $waterLevelData = $this->mesuremetsToArray($waterLevelRepository->findByPlanterId($id));
-        $lightLevelData = $this->mesuremetsToArray($lightLevelRepository->findByPlanterId($id));
-        $soilMoistureData = $this->mesuremetsToArray($soilMoistureRepository->findByPlanterId($id));
 
-        return $this->render('planter/detail.html.twig', [
+        return $this->render('planter/edit.html.twig', [
             'PlanterForm' => $form->createView(),
             'planterName' => $planter->getName(),
-            'airHumidityData' => $serializer->serialize($airHumidityData, 'json'),
-            'airTemperatureData' => $serializer->serialize($airTemperatureData, 'json'),
-            'waterLevelData' => $serializer->serialize($waterLevelData, 'json'),
-            'lightLevelData' => $serializer->serialize($lightLevelData, 'json'),
-            'soilMoistureData' => $serializer->serialize($soilMoistureData, 'json'),
         ]);
-    }
-
-    private function mesuremetsToArray($mesurements): array
-    {
-        $data = [];
-        foreach ($mesurements as $airTemperature){
-            $date =$airTemperature->getDate()->format('Y-m-d H:i:s');
-
-            $data[] = [$date, $airTemperature->getValue()];
-        }
-        return $data;
     }
 }
