@@ -18,16 +18,6 @@ class UserSettingsFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-
-        $choices = [];
-        for($i=0; $i<24 ; $i++){
-            $date = new \DateTime('1970-01-01');
-            $date->setTime($i,0,0);
-            $choices[$i.':00'] = $date;
-        }
-        $date = new \DateTime('1970-01-01');
-        $date->setTime(14,0,0);
-
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $entity = $event->getData();
             $time = $entity->getSendNotificationsAt();
