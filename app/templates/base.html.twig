@@ -40,9 +40,9 @@
         {% endif %}
         <a class="item closebtn" href="javascript:void(0)" onclick="closeNav()">&times;</a>
         <a class="item" href="{{ path('main') }}">main</a>
-        <a class="item" href="{{ path('plant_presets') }}">plant settings</a>
         <a class="item" href="{{ path('planter') }}">planters</a>
-        <a class="item" href="#">Contact</a>
+        <a class="item" href="{{ path('plant_presets') }}">plant settings</a>
+        <a class="item" href="{{ path('user_settings') }}">settings</a>
     </div>
 
     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; menu</span>
