@@ -66,4 +66,11 @@ class UserSettings
     {
         return $this->user_id;
     }
+
+    public function __toString()
+    {
+        return sprintf("[%d] - %d", $this->user_id, $this->send_notifications);
+    }
+
+
 }

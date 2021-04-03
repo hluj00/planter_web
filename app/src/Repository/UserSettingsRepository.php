@@ -19,23 +19,19 @@ class UserSettingsRepository extends ServiceEntityRepository
         parent::__construct($registry, UserSettings::class);
     }
 
-    // /**
-    //  * @return UserSettings[] Returns an array of UserSettings objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return UserSettings[] Returns an array of UserSettings objects
+      */
+    public function findByNotificationsBetween($from, $to)
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('u.send_notifications_at BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
-
 
     /**
      * @param $value
