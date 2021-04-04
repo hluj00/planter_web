@@ -19,9 +19,9 @@ class AirTemperatureRepository extends ServiceEntityRepository
         parent::__construct($registry, AirTemperature::class);
     }
 
-     /**
-      * @return AirTemperature[] Returns an array of AirTemperature objects
-      */
+    /**
+     * @return AirTemperature[] Returns an array of AirTemperature objects
+     */
     public function findByPlanterId($value)
     {
         return $this->createQueryBuilder('a')
@@ -29,10 +29,29 @@ class AirTemperatureRepository extends ServiceEntityRepository
             ->setParameter('val', $value)
             ->orderBy('a.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
+    /**
+     * @return AirTemperature[] Returns an array of AirTemperature objects
+     */
+    public function findByPlanterIdDateAndValue($id, $from, $to, $value)
+    {
+            $result = $this->createQueryBuilder('a')
+                //->andWhere('a.planter_id = :id')
+                ->andWhere('a.value < 3')
+                //->andWhere('a.date BETWEEN :from AND :to')
+                //->setParameter('from', $from)
+                //->setParameter('to', $to)
+                //->setParameter('id', $id)
+                //->setParameter('val', $value)
+                ->getQuery()
+                ;
+
+            //echo $result;
+
+            return $result->getResult();
+    }
 
     /*
     public function findOneBySomeField($value): ?AirTemperature

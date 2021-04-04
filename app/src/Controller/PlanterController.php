@@ -11,6 +11,7 @@ use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
 use App\Repository\WaterLevelRepository;
+use DateInterval;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -94,8 +95,18 @@ class PlanterController extends BaseController
         $serializer = new Serializer($normalizers, $encoders);
 
 
+
         $userId = $this->getUser()->getId();
         $planter = $planterRepository->findOneById($id);
+        $planterId = $planter->getId();
+
+
+        $from = new \DateTime();
+        $from->sub(new DateInterval('PT1H'));
+        $from->setTime(0,0,0);
+        $to = $from;
+        $to->setTime(23,59,59);
+        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
 
 
         $airHumidityData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
@@ -129,11 +140,24 @@ class PlanterController extends BaseController
      * @Route("/planter/edit/{id}", name="planter_edit")
      */
     public function edit(
+        AirTemperatureRepository $airTemperatureRepository,
+
         Request $request,
         PlantPresetsRepository $plantPresetsRepository,
         PlanterRepository $planterRepository,
         $id): Response
     {
+        $userId = $this->getUser()->getId();
+        $planter = $planterRepository->findOneById($id);
+        $planterId = $planter->getId();
+
+
+        $from = new \DateTime();
+        $from->sub(new DateInterval('PT1H'));
+        $from->setTime(0,0,0);
+        $to = $from;
+        $to->setTime(23,59,59);
+        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
 
 
         $userId = $this->getUser()->getId();

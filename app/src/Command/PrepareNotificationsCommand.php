@@ -2,6 +2,9 @@
 
 namespace App\Command;
 
+use App\Repository\AirTemperatureRepository;
+use App\Repository\PlanterRepository;
+use App\Repository\PlantPresetsRepository;
 use App\Repository\UserSettingsRepository;
 use DateInterval;
 use Symfony\Component\Console\Command\Command;
@@ -21,9 +24,33 @@ class PrepareNotificationsCommand extends Command
      */
     private $userSettingsRepository;
 
-    public function __construct(UserSettingsRepository $userSettingsRepository)
+    /**
+     * @var PlanterRepository
+     */
+    private $planterRepository;
+
+    /**
+     * @var PlantPresetsRepository
+     */
+    private $plantPresetsRepository;
+
+    /**
+     * @var AirTemperatureRepository
+     */
+    private $airTemperatureRepository;
+
+    public function __construct(
+        UserSettingsRepository $userSettingsRepository,
+        PlanterRepository $planterRepository,
+        PlantPresetsRepository $plantPresetsRepository,
+        AirTemperatureRepository $airTemperatureRepository
+
+    )
     {
         $this->userSettingsRepository = $userSettingsRepository;
+        $this->planterRepository = $planterRepository;
+        $this->plantPresetsRepository = $plantPresetsRepository;
+        $this->airTemperatureRepository = $airTemperatureRepository;
 
         parent::__construct();
     }
@@ -58,12 +85,30 @@ class PrepareNotificationsCommand extends Command
         }
 
         echo "no ty kokos";
-        foreach ($settings as $setting){
-            echo  $setting;
+        foreach ($settings as $UserSetting){
+            echo  $UserSetting;
+            $userId = $UserSetting->getUserId();
+            $planters = $this->planterRepository->findByUserId($userId);
+            foreach ($planters as $planter){
+                $plantPresets = $this->plantPresetsRepository->findOneById($planter->getPlantPresetsId());
+                echo $this->checkTemperature($planter->getId(), $plantPresets->getTemperature());
+            }
+
         }
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+
 
         return Command::SUCCESS;
+    }
+
+    private function checkTemperature($planterId, $minTemp){
+        $from = new \DateTime();
+        $from->sub(new DateInterval('PT1H'));
+        $from->setTime(0,0,0);
+        $to = $from;
+        $to->setTime(23,59,59);
+        $result = $this->airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, $minTemp);
+
+        return is_null($result) ? "jop" : "nope";
     }
 }
