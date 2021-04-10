@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   app:
+    restart: always
     ports:
       - 80:80
     environment:
