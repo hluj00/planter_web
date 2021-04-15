@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/main.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/table.css') }}">
 {#        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/form00.css') }}">#}
@@ -33,7 +34,7 @@
     <div id="mySidenav" class="sidenav">
         {% if app.user %}
             <p> you're loged in as: {{ app.user.getUsername}} <br>
-                <a href="{{ path('app_logout') }}">logout</a>
+                <a href="{{ path('app_logout') }}"><button class="btn btn-secondary btn-sm">logout</button></a>
             </p>
         {% else %}
             <p> please <a href="{{ path('app_login') }}">login</a> or <a href="{{ path('app_register') }}">register</a></p>

@@ -2,12 +2,42 @@
 
 {% block title %}Register{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/form.css') }}">
+{% endblock %}
+
 {% block body %}
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <h1>edit</h1>
-
-    {{ form(SettingsForm) }}
+    <div class="example-wrapper">
+        <h1>Edit plant preset:  <b>{{ plantPreset.getName }}</b></h1>
+        <div class="block-wrapper">
+        {{ form_start(presetsForm) }}
+            <div class="form-group">
+                {{ form_label((presetsForm.name)) }}
+                {{ form_widget(presetsForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.moisture)) }}
+                {{ form_widget(presetsForm.moisture, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.temperature)) }}
+                {{ form_widget(presetsForm.temperature, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.light_level)) }}
+                {{ form_widget(presetsForm.light_level, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.light_duration)) }}
+                {{ form_widget(presetsForm.light_duration, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_widget(presetsForm.save, {'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_widget(presetsForm.delete, {'attr': {'class': 'btn btn-danger' , 'onclick': 'return confirm("Are you sure?")'}}) }}
+        {{ form_end(presetsForm) }}
+        </div>
+    </div>
 {% endblock %}

@@ -19,6 +19,25 @@ class WaterLevelRepository extends ServiceEntityRepository
         parent::__construct($registry, WaterLevel::class);
     }
 
+    /**
+     * @return WaterLevel[] Returns an array of AirTemperature objects
+     */
+    public function findByPlanterIdDatesAndValue($id, $from, $to, $value)
+    {
+        $result = $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :id')
+            ->andWhere('a.value < :val')
+            ->andWhere('a.date BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->setParameter('id', $id)
+            ->setParameter('val', $value)
+            ->getQuery()
+        ;
+
+        return $result->getResult();
+    }
+
      /**
       * @return WaterLevel[] Returns an array of WaterLevel objects
       */

@@ -33,6 +33,23 @@ class LightLevelRepository extends ServiceEntityRepository
             ;
     }
 
+    /**
+     * @return LightLevel[] Returns an array of AirTemperature objects
+     */
+    public function findByPlanterIdAndDates($id, $from, $to)
+    {
+        $result = $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :id')
+            ->andWhere('a.date BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->setParameter('id', $id)
+            ->getQuery()
+        ;
+
+        return $result->getResult();
+    }
+
     /*
     public function findOneBySomeField($value): ?LightLevel
     {

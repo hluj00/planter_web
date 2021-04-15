@@ -21,13 +21,13 @@ class UserSettingsController extends BaseController
     {
         $userId = $this->getUser()->getId();
         $userSettings = $userSettingsRepository->findOneByUserId($userId);
-        dump($userSettings);
+//        dump($userSettings);
         $form = $this->createForm(UserSettingsFormType::class, $userSettings);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($form->get('send_notifications_at')->getData());
-            dump($form->get('send_notifications')->getData());
+//            dump($form->get('send_notifications_at')->getData());
+//            dump($form->get('send_notifications')->getData());
 
             $userSettings->setSendNotificationsAt($form->get('send_notifications_at')->getData());
             $userSettings->setSendNotifications($form->get('send_notifications')->getData() ? 1 : 0);
@@ -37,6 +37,11 @@ class UserSettingsController extends BaseController
             $entityManager->flush();
 
         }
+
+        $time = $userSettings->getSendNotificationsAt()->format('H:i:s');
+        dump($time);
+        $time = explode(":", $time);
+        dump($time);
 
 
         return $this->render('user_settings/edit.html.twig', [

@@ -35,20 +35,18 @@ class AirTemperatureRepository extends ServiceEntityRepository
     /**
      * @return AirTemperature[] Returns an array of AirTemperature objects
      */
-    public function findByPlanterIdDateAndValue($id, $from, $to, $value)
+    public function findByPlanterIdDatesAndValue($id, $from, $to, $value)
     {
             $result = $this->createQueryBuilder('a')
-                //->andWhere('a.planter_id = :id')
-                ->andWhere('a.value < 3')
-                //->andWhere('a.date BETWEEN :from AND :to')
-                //->setParameter('from', $from)
-                //->setParameter('to', $to)
-                //->setParameter('id', $id)
-                //->setParameter('val', $value)
+                ->andWhere('a.planter_id = :id')
+                ->andWhere('a.value < :val')
+                ->andWhere('a.date BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to)
+                ->setParameter('id', $id)
+                ->setParameter('val', $value)
                 ->getQuery()
                 ;
-
-            //echo $result;
 
             return $result->getResult();
     }

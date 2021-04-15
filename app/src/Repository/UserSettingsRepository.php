@@ -33,6 +33,7 @@ class UserSettingsRepository extends ServiceEntityRepository
         ;
     }
 
+
     /**
      * @param $value
      * @return UserSettings|null

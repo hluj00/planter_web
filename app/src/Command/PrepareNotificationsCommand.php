@@ -2,11 +2,16 @@
 
 namespace App\Command;
 
+use App\Entity\PlantPresets;
 use App\Repository\AirTemperatureRepository;
+use App\Entity\Notification;
+use App\Repository\LightLevelRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\UserSettingsRepository;
 use DateInterval;
+use DateTimeZone;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,18 +44,31 @@ class PrepareNotificationsCommand extends Command
      */
     private $airTemperatureRepository;
 
+    /**
+     * @var LightLevelRepository
+     */
+    private $lightLevelRepository;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
     public function __construct(
         UserSettingsRepository $userSettingsRepository,
         PlanterRepository $planterRepository,
         PlantPresetsRepository $plantPresetsRepository,
-        AirTemperatureRepository $airTemperatureRepository
-
+        AirTemperatureRepository $airTemperatureRepository,
+        LightLevelRepository $lightLevelRepository,
+        EntityManagerInterface $entityManager
     )
     {
         $this->userSettingsRepository = $userSettingsRepository;
         $this->planterRepository = $planterRepository;
         $this->plantPresetsRepository = $plantPresetsRepository;
         $this->airTemperatureRepository = $airTemperatureRepository;
+        $this->lightLevelRepository = $lightLevelRepository;
+        $this->entityManager = $entityManager;
 
         parent::__construct();
     }
@@ -71,7 +89,7 @@ class PrepareNotificationsCommand extends Command
         $to->add(new DateInterval('PT1H'));
 
 
-        $settings = $this->userSettingsRepository->findByNotificationsBetween($from, $to);
+        $settings = $this->userSettingsRepository->findAll();
 
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
@@ -84,31 +102,90 @@ class PrepareNotificationsCommand extends Command
             // ...
         }
 
-        echo "no ty kokos";
-        foreach ($settings as $UserSetting){
-            echo  $UserSetting;
-            $userId = $UserSetting->getUserId();
+        echo "no ty kokossss";
+        foreach ($settings as $userSetting){
+            echo  $userSetting;
+            $userId = $userSetting->getUserId();
             $planters = $this->planterRepository->findByUserId($userId);
+
+            $sendAt = $userSetting->getSendNotificationsAtToday();
+
+
             foreach ($planters as $planter){
+                echo $planter->getName();
                 $plantPresets = $this->plantPresetsRepository->findOneById($planter->getPlantPresetsId());
-                echo $this->checkTemperature($planter->getId(), $plantPresets->getTemperature());
+
+                $x = $this->checkTemperature($planter->getId(), $plantPresets);
+                echo $x ? "jop" : "nope";
+                if ($x){
+                    $body = sprintf('{ "value1" : "%s", "value2" : "is below set temperature" }', $planter->getName());
+                    $this->createNewNotification($userId, $sendAt, $body, 1);
+                }
+
+                $x = $this->checkLight($planter->getId(), $plantPresets);
+                echo $x ? "jop" : "nope";
+                if ($x){
+                    $body = sprintf('{ "value1" : "%s", "value2" : "didn\'t get enough light yesterday" }', $planter->getName());
+                    $this->createNewNotification($userId, $sendAt, $body, 2);
+                }
             }
 
         }
 
-
-
         return Command::SUCCESS;
     }
 
-    private function checkTemperature($planterId, $minTemp){
-        $from = new \DateTime();
-        $from->sub(new DateInterval('PT1H'));
-        $from->setTime(0,0,0);
-        $to = $from;
-        $to->setTime(23,59,59);
-        $result = $this->airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, $minTemp);
+    private function createNewNotification($userId,$sendAt,$body,$type){
+        $notification = new Notification();
+        $notification->setUserId($userId);
+        $notification->setCreatedAt(new \DateTime('now', new DateTimeZone('Europe/Prague')));
+        $notification->setSendAt($sendAt);
+        $notification->setType(2);
+        $notification->setValue($body);
+        $notification->setSend(false);
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
+    }
 
-        return is_null($result) ? "jop" : "nope";
+    private function checkTemperature(int $planterId, PlantPresets $plantPresets): bool
+    {
+        $minTemp = $plantPresets->getTemperature();
+
+        $from = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $from->sub(new DateInterval('P1D'));
+        $from->setTime(0,0,0);
+        $to = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $to->sub(new DateInterval('P1D'));
+        $to->setTime(23,59,59);
+        $result = $this->airTemperatureRepository->findByPlanterIdDatesAndValue($planterId, $from, $to, $minTemp);
+
+        return !empty($result);
+    }
+
+    private function checkLight(int $planterId, PlantPresets $plantPresets): bool{
+        $minVaue = $plantPresets->getLightLevel();
+        $minTime = $plantPresets->getLightDuration() * 3600;
+
+        //get data from db
+        $from = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $from->sub(new DateInterval('P1D'));
+        $from->setTime(0,0,0);
+        $to = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $to->sub(new DateInterval('P1D'));
+        $to->setTime(23,59,59);
+        $data = $this->lightLevelRepository->findByPlanterIdAndDates($planterId, $from, $to);
+
+
+        $size = sizeof($data);
+        $timeTotal = 0;
+        for ($i = 1; $i< $size; $i++){
+            if ($data[$i-1]->getValue() + $data[$i-1]->getValue() > $minVaue * 2){
+                $time1 = strtotime($data[$i-1]->getDate()->format('Y-m-d H:i:s'));
+                $time2 = strtotime($data[$i]->getDate()->format('Y-m-d H:i:s'));
+                $timeTotal += $time2 - $time1;
+            }
+        }
+
+        return($timeTotal < $minTime);
     }
 }

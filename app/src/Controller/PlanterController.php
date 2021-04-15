@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Planter;
+use App\Entity\PlantPresets;
 use App\Form\PlanterFormType;
 use App\Repository\AirHumidityRepository;
 use App\Repository\AirTemperatureRepository;
@@ -12,6 +13,7 @@ use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
 use App\Repository\WaterLevelRepository;
 use DateInterval;
+use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +41,7 @@ class PlanterController extends BaseController
             $presetArray[$preset->getId()] = $preset;
         }
 
-        dump($presetArray);
+//        dump($presetArray);
         return $this->render('planter/index.html.twig', [
             'controller_name' => 'PlanterController',
             'planters' => $planters,
@@ -106,7 +108,7 @@ class PlanterController extends BaseController
         $from->setTime(0,0,0);
         $to = $from;
         $to->setTime(23,59,59);
-        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
+//        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
 
 
         $airHumidityData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
@@ -140,7 +142,7 @@ class PlanterController extends BaseController
      * @Route("/planter/edit/{id}", name="planter_edit")
      */
     public function edit(
-        AirTemperatureRepository $airTemperatureRepository,
+        LightLevelRepository $LightLevelRepository,
 
         Request $request,
         PlantPresetsRepository $plantPresetsRepository,
@@ -157,7 +159,6 @@ class PlanterController extends BaseController
         $from->setTime(0,0,0);
         $to = $from;
         $to->setTime(23,59,59);
-        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
 
 
         $userId = $this->getUser()->getId();
@@ -192,4 +193,6 @@ class PlanterController extends BaseController
             'planterName' => $planter->getName(),
         ]);
     }
+
+
 }

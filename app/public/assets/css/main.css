@@ -32,6 +32,7 @@ body {
     color: #b8b8b8;
     display: block;
     transition: 0.3s;
+    background: #123e31;
 }
 
 .sidenav a:hover {
@@ -54,6 +55,16 @@ body {
 
 h1, h2, h3{
     text-align: center;
+}
+
+.block-wrapper{
+    border-radius: 25px;
+    background: rgba(5, 38, 14, 0.75);
+    color: #F5F5F5;
+    padding: 20px;
+    margin-top: 80px;
+    margin-bottom: 20px;
+    box-shadow: 40px 50px 50px rgba( 0, 0, 0, 0.18 );
 }
 
 @media screen and (max-height: 450px) {

@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -28,16 +29,16 @@ class UserSettingsFormType extends AbstractType
                 $choices[$i.':00'] = $time->format("H") == $i ? $time : $date;
             }
 
-            dump($entity);
             $form = $event->getForm();
-            $form->add('send_notifications_at', ChoiceType::class, array(
-
-                'choices' => $choices,
-                'empty_data' => 'guide'
-            ))
+            $form->
+                add('send_notifications_at', ChoiceType::class, array(
+                    'choices' => $choices,
+                    'empty_data' => 'guide'
+                ))
                 ->add('send_notifications', CheckboxType::class, [
                     'required' => false,
                 ])
+                ->add('ifttt_endpoint', TextType::class)
                 ->add('save', SubmitType::class, ['label' => 'save']);
         });
     }
