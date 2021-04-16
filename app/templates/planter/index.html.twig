@@ -1,66 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Create two equal columns that floats next to each other */
-        .column {
-            border-radius: 15px;
-            float: left;
-            width: 49%;
-            padding: 10px;
-            margin: 0.5%;
-        }
-
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Clear floats after the columns */
-        .row {
-            max-width: 720px;
-            margin: 0 auto 60px;
-        }
-
-        /* Style the buttons */
-        .btn-custom {
-            border: none;
-            outline: none;
-            padding: 12px 16px;
-            background-color: #f1f1f1;
-            cursor: pointer;
-        }
-
-        .btn-custom:hover {
-            background-color: #5d5d5d;
-        }
-
-        .btn-custom.active {
-            background-color: #666;
-            color: white;
-        }
-
-
-    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/grid-list.css') }}">
 {% endblock %}
 
 {% block title %}Hello PlanterController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
+<div class="content-wrapper">
 
     <h2>Planters</h2>
 
@@ -75,10 +23,10 @@
 
     <div class="row">
         {% for p in planters %}
-            <a href="{{ path('planter_detail' , {id: p.id}) }}">
+            <a class="no-styling" href="{{ path('planter_detail' , {id: p.id}) }}">
                 <div class="column" style="background-color:{{ p.color }}; color: #111111;" >
                     <h2>{{ p.getName() }}</h2>
-                    <p style="color: #111111;">{{ presets[p.getPlantPresetsId].name }}</p>
+                    <p>{{ presets[p.getPlantPresetsId].name }}</p>
                     <a href="{{ path('planter_edit' , {id: p.getId}) }}"><button class="btn btn-info">editovat nastavení</button></a>
                 </div>
             </a>
@@ -86,37 +34,6 @@
     </div>
         <a href="{{ path('planter_new') }}" class="btn btn-primary btn-block">add new</a>
     </div>
-    <script>
-        // Get the elements with class="column"
-        var elements = document.getElementsByClassName("column");
-
-        // Declare a loop variable
-        var i;
-
-        // List View
-        function listView() {
-            for (i = 0; i < elements.length; i++) {
-                elements[i].style.width = "99%";
-            }
-        }
-
-        // Grid View
-        function gridView() {
-            for (i = 0; i < elements.length; i++) {
-                elements[i].style.width = "49%";
-            }
-        }
-
-        /* Optional: Add active class to the current button (highlight it) */
-        var container = document.getElementById("btnContainer");
-        var btns = container.getElementsByClassName("btn");
-        for (var i = 0; i < btns.length; i++) {
-            btns[i].addEventListener("click", function() {
-                var current = document.getElementsByClassName("active");
-                current[0].className = current[0].className.replace(" active", "");
-                this.className += " active";
-            });
-        }
-    </script>
+    <script type="text/javascript" src="{{ asset('assets/js/grid-list.js') }}"></script>
 </div>
 {% endblock %}

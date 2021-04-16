@@ -5,17 +5,26 @@
 
 {% block body %}
 
-    <div class="example-wrapper">
-    <h1>Planter: {{ planterName }}</h1>
-
-    {{ form_start(PlanterForm) }}
-        {{ form_widget(PlanterForm.name) }}
-        {{ form_widget(PlanterForm.plant_presets_id) }}
-        {{ form_widget(PlanterForm.color) }}
-        {{ form_widget(PlanterForm.save) }}
-        {{ form_widget(PlanterForm.delete) }}
-    {{ form_end(PlanterForm) }}
-
+    <div class="content-wrapper">
+        <h1>Edit planter: <b>{{ planterName }}</b></h1>
+        <div class="block-wrapper">
+            {{ form_start(planterForm) }}
+            <div class="form-group">
+                {{ form_label((planterForm.name)) }}
+                {{ form_widget(planterForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((planterForm.plant_presets_id)) }}
+                {{ form_widget(planterForm.plant_presets_id, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((planterForm.color)) }}
+                {{ form_widget(planterForm.color, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_widget(planterForm.save, {'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_widget(planterForm.delete, {'attr': {'class': 'btn btn-danger' , 'onclick': 'return confirm("Are you sure?")'}}) }}
+            {{ form_end(planterForm) }}
+        </div>
     </div>
 
 

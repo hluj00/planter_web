@@ -7,8 +7,33 @@
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <h1>new</h1>
-
-    {{ form(SettingsForm) }}
+    <div class="content-wrapper">
+        <h1>New plant preset</h1>
+        <div class="block-wrapper">
+            {{ form_start(presetsForm) }}
+            <div class="form-group">
+                {{ form_label((presetsForm.name)) }}
+                {{ form_widget(presetsForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.moisture)) }}
+                {{ form_widget(presetsForm.moisture, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.temperature)) }}
+                {{ form_widget(presetsForm.temperature, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.light_level)) }}
+                {{ form_widget(presetsForm.light_level, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_label((presetsForm.light_duration)) }}
+                {{ form_widget(presetsForm.light_duration, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            {{ form_widget(presetsForm.save, {'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_end(presetsForm) }}
+        </div>
+    </div>
 
 {% endblock %}

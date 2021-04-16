@@ -2,16 +2,13 @@
 
 {% block title %}Register{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/form.css') }}">
-{% endblock %}
 
 {% block body %}
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <div class="example-wrapper">
+    <div class="content-wrapper">
         <h1>Edit plant preset:  <b>{{ plantPreset.getName }}</b></h1>
         <div class="block-wrapper">
         {{ form_start(presetsForm) }}

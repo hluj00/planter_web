@@ -62,7 +62,7 @@ class PlantPresetsController extends BaseController
         }
 
         return $this->render('PlantPresets/new.html.twig', [
-            'SettingsForm' => $form->createView(),
+            'presetsForm' => $form->createView(),
         ]);
     }
 

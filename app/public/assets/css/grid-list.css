@@ -1,0 +1,49 @@
+* {
+    box-sizing: border-box;
+}
+
+a.no-styling{
+    color: #000000;
+    text-decoration: none;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+    border-radius: 15px;
+    float: left;
+    width: 49%;
+    padding: 10px;
+    margin: 0.5%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Clear floats after the columns */
+.row {
+    max-width: 720px;
+    margin: 0 auto 60px;
+}
+
+/* Style the buttons */
+.btn-custom {
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.btn-custom:hover {
+    background-color: #5d5d5d;
+}
+
+.btn-custom.active {
+    background-color: #666;
+    color: white;
+}
+

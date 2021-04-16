@@ -3,14 +3,9 @@
 {% block title %}Hello SettingsPlantController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
+<div class="content-wrapper text-center">
     <h1>plant presets</h1>
-
+<div>
     <div class="table-wrapper">
         <table class="fl-table">
             <thead>
@@ -31,12 +26,13 @@
                     <td>{{ c.temperature }}</td>
                     <td>{{ c.lightLevel }}</td>
                     <td>{{ c.lightDuration}} h</td>
-                    <td><a href="{{ path('plant_presets_edit' , {id: c.id}) }}">edituj</a></td>
+                    <td><a class="btn btn-info btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edituj</a></td>
                 </tr>
             {% endfor %}
             <tbody>
         </table>
     </div>
-    <a href="{{ path('plant_presets_new') }}">vytvorit nový</a>
+    <a class="btn btn-primary btn-table" href="{{ path('plant_presets_new') }}">add new</a>
+    <div>
 </div>
 {% endblock %}

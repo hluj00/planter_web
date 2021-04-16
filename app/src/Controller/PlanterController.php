@@ -74,7 +74,7 @@ class PlanterController extends BaseController
         }
 
         return $this->render('planter/new.html.twig', [
-            'PlanterForm' => $form->createView(),
+            'planterForm' => $form->createView(),
         ]);
     }
 
@@ -189,7 +189,7 @@ class PlanterController extends BaseController
 
 
         return $this->render('planter/edit.html.twig', [
-            'PlanterForm' => $form->createView(),
+            'planterForm' => $form->createView(),
             'planterName' => $planter->getName(),
         ]);
     }
