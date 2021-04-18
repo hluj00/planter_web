@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\PlantPresets;
 use App\Entity\SoilMoisture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,27 @@ class SoilMoistureRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+    /**
+     * @param $planterId
+     * @param $date
+     * @return SoilMoisture|null
+     */
+    public function findLastByPlanterIdAndDate($planterId, $date)
+    {
+        $result = $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :val')
+            ->andWhere('a.date > :date')
+            ->setParameter('val', $planterId)
+            ->setParameter('date', $date)
+            ->orderBy('a.date', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult()
+            ;
+
+        return empty($result) ? null : $result[0];
     }
 
     /*

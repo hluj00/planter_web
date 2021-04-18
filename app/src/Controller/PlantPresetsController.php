@@ -9,6 +9,7 @@ use App\Form\PlantPresetsFormType;
 use App\Repository\LightLevelRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\PlantPresetsRepository;
+use App\Repository\SoilMoistureRepository;
 use App\Repository\WaterLevelRepository;
 use DateInterval;
 use DateTimeZone;
@@ -73,10 +74,11 @@ class PlantPresetsController extends BaseController
         LightLevelRepository $lightLevelRepository,
         WaterLevelRepository $waterLevelRepository,
         NotificationRepository $notificationRepository,
+        SoilMoistureRepository $soilMoistureRepository,
 
-        Request $request, PlantPresetsRepository $settingsPlantRepository, $id): Response
+        Request $request, PlantPresetsRepository $plantPresetsRepository, $id): Response
     {
-        $plantPresets = $settingsPlantRepository->findOneById($id);
+        $plantPresets = $plantPresetsRepository->findOneById($id);
         if ($plantPresets === null){
             return $this->renderUnauthorised();
             //todo neexistuje
@@ -90,8 +92,9 @@ class PlantPresetsController extends BaseController
 //        =======================================================================
 //        TEST
 
-        $this->notificationAlreadyExists($notificationRepository, 2, 3);
+//        $this->notificationAlreadyExists($notificationRepository, 2, 3);
 //        $this->checkWaterLevel($waterLevelRepository, 1, $plantPresets);
+        $this->lowMoisture($soilMoistureRepository,1, $plantPresets);
 //        =======================================================================
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -180,5 +183,16 @@ class PlantPresetsController extends BaseController
         dump($date);
         dump($result);
         return !empty($result);
+    }
+
+    protected function lowMoisture(SoilMoistureRepository $soilMoistureRepository, $planterId, PlantPresets $plantPreset): bool{
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
+        $date->setTime(0,0,0);
+
+        $soilMoisture = $soilMoistureRepository->findLastByPlanterIdAndDate(3, $date);
+        dump($soilMoisture);
+        $limit = $plantPreset->getMoisture();
+        $limit = 0.15;
+        return (!(is_null($soilMoisture) || $soilMoisture->getValue() > $limit));
     }
 }

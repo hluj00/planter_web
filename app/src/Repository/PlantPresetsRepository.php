@@ -21,22 +21,40 @@ class PlantPresetsRepository extends ServiceEntityRepository
     }
 
     /**
-    //  * @return SettingsPlant[] Returns an array of SettingsPlant objects
-    //  */
-    public function findByUserId($value)
+     * @param int $value
+     * @return int|mixed|string
+     */
+    public function findByUserId(int $value)
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.user_id = :val')
             ->setParameter('val', $value)
             ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @param array $value
+     * @return int|mixed|string
+     */
+    public function findByUserIdIn(array $value)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.user_id IN( :val )')
+            ->setParameter('val', $value)
+            ->orderBy('s.id', 'ASC')
             ->getQuery()
             ->getResult()
         ;
     }
 
 
-
+    /**
+     * @param $id
+     * @return PlantPresets|null
+     */
     public function findOneById($id): ?PlantPresets
     {
         try {

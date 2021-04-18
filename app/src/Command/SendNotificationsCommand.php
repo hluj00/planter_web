@@ -6,6 +6,7 @@ use App\Entity\Notification;
 use App\Repository\NotificationRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\UserSettingsRepository;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -57,7 +58,8 @@ class SendNotificationsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $notifications = $this->notificationRepository->findBySendAndDate(0, new \DateTime('now'));
+        $date = new \DateTime('now',new DateTimeZone('Europe/Prague'));
+        $notifications = $this->notificationRepository->findBySendAndDate(0, $date);
 
         foreach ($notifications as $notification){
             $this->sendNotification($notification);
