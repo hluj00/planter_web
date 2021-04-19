@@ -12,6 +12,7 @@
             <div class="form-group">
                 {{ form_label((planterForm.name)) }}
                 {{ form_widget(planterForm.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(planterForm.name) }}
             </div>
             <div class="form-group">
                 {{ form_label((planterForm.plant_presets_id)) }}

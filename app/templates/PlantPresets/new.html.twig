@@ -14,18 +14,21 @@
             <div class="form-group">
                 {{ form_label((presetsForm.name)) }}
                 {{ form_widget(presetsForm.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(presetsForm.name) }}
             </div>
             <div class="form-group">
                 {{ form_label((presetsForm.moisture)) }}
-                {{ form_widget(presetsForm.moisture, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(presetsForm.moisture, {'attr': {'class': 'form-control input-unit'}}) }}<span class=" input-unit">%</span>
+                {{ form_errors(presetsForm.moisture) }}
             </div>
             <div class="form-group">
                 {{ form_label((presetsForm.temperature)) }}
-                {{ form_widget(presetsForm.temperature, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(presetsForm.temperature, {'attr': {'class': 'form-control input-unit'}}) }}<span class="input-unit">°C</span>
+                {{ form_errors(presetsForm.temperature) }}
             </div>
             <div class="form-group">
                 {{ form_label((presetsForm.light_level)) }}
-                {{ form_widget(presetsForm.light_level, {'attr': {'class': 'form-control'}}) }}
+                {{ form_widget(presetsForm.light_level, {'attr': {'class': 'form-control input-unit'}}) }}
             </div>
             <div class="form-group">
                 {{ form_label((presetsForm.light_duration)) }}

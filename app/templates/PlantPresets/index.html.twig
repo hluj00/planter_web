@@ -22,9 +22,9 @@
             {% for c in settings %}
                 <tr>
                     <td>{{ c.name }}</td>
-                    <td>{{ c.moisture }}</td>
-                    <td>{{ c.temperature }}</td>
-                    <td>{{ c.lightLevel }}</td>
+                    <td>{{ c.moisture * 100}} %</td>
+                    <td>{{ c.temperature }} °C</td>
+                    <td>{{ c.lightLevel }} lux</td>
                     <td>{{ c.lightDuration}} h</td>
                     <td><a class="btn btn-info btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edituj</a></td>
                 </tr>
