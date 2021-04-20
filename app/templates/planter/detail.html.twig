@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Planter: {{ planter.getName }}{% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -22,9 +22,7 @@
 {% block body %}
 
     <div class="content-wrapper">
-    <h1>Planter: {{ planter.getName }}</h1>
-
-        <h2>data</h2>
+    <h1>Planter: <b>{{ planter.getName }}</b></h1>
 
         <div class="block-wrapper">
             <h2>air humidity</h2>
@@ -37,9 +35,11 @@
             <div id="chart_div4" class = "graph"></div>
             <h2 class="mt-5">soil moisture</h2>
             <div id="chart_div5" class = "graph"></div>
+
+            <a href="{{ path('planter_edit' , {id: planter.getId}) }}"><button class="btn btn-info btn-block mt-5">editovat</button></a>
+
         </div>
 
-        <a href="{{ path('planter_edit' , {id: planter.getId}) }}"><button class="btn btn-info btn-block">editovat</button></a>
 
     </div>
 
