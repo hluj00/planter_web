@@ -6,10 +6,20 @@
     <div class="content-wrapper">
         <h1>New Planter</h1>
         <div class="block-wrapper">
+            <form action="">
+                <div class="form-group">
+                <label for="country">User hash</label>
+                <label for="hash"></label>
+                <input type="text" id="hash" name="hash" class="form-control" value="{{ user_hash }}" readonly>
+            </div>
+            </form>
             {{ form_start(form) }}
             <div class="form-group">
                 {{ form_label((form.send_notifications_at)) }}
                 {{ form_widget(form.send_notifications_at, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_row((form.notification_period_type), {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="form-group">
                 {{ form_label((form.send_notifications)) }}

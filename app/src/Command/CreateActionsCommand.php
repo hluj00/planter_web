@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Action;
 use App\Entity\PlantPresets;
+use App\Repository\ActionRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
@@ -23,8 +24,20 @@ class CreateActionsCommand extends Command
      */
     private $soilMoistureRepository;
 
+    /**
+     * @var PlanterRepository
+     */
     private $planterRepository;
+
+    /**
+     * @var PlantPresetsRepository
+     */
     private $plantPresetsRepository;
+
+    /**
+     * @var ActionRepository
+     */
+    private $actionRepository;
 
     /**
      * @var EntityManagerInterface
@@ -42,12 +55,14 @@ class CreateActionsCommand extends Command
         PlanterRepository $planterRepository,
         PlantPresetsRepository $plantPresetsRepository,
         SoilMoistureRepository $soilMoistureRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        ActionRepository $actionRepository
     )
     {
         $this->planterRepository = $planterRepository;
         $this->plantPresetsRepository = $plantPresetsRepository;
         $this->soilMoistureRepository = $soilMoistureRepository;
+        $this->actionRepository = $actionRepository;
         $this->entityManager = $entityManager;
 
         parent::__construct($name);
@@ -76,11 +91,14 @@ class CreateActionsCommand extends Command
                 $plantPreset = $plantPresets[$presetId] = $this->plantPresetsRepository->findOneById($presetId);
             }
 
-            if ($this->lowMoisture($planter->getId(), $plantPreset)){
+            $lowMoisture = $this->lowMoisture($planter->getId(), $plantPreset);
+            $actionExists = $this->unexecutedActionExits($planter->getId(),1);
+            if ($lowMoisture && !$actionExists){
                 echo "vytvari \n";
                 $this->createAction($planter->getId());
             }else{
-                echo "NEvytvari \n";
+                echo $actionExists ? "exituje" : "neexistuje";
+                echo "\nNEvytvari \n";
             }
         }
 
@@ -98,9 +116,18 @@ class CreateActionsCommand extends Command
         if (is_null($soilMoisture)){
             echo "NULL\n";
         }else{
+            echo "\n";
             echo $soilMoisture->getValue();
+            echo $soilMoisture->getValue() < $limit ? "cura\n" : "necura\n";
         }
-        return (!(is_null($soilMoisture) || $soilMoisture->getValue() > $limit));
+
+        return (!is_null($soilMoisture) && $soilMoisture->getValue() < $limit);
+    }
+
+    private function unexecutedActionExits($planterId, $actionType): bool
+    {
+        $result = $this->actionRepository->findByPlanterIdTypeExecuted($planterId, $actionType, 0);
+        return !empty($result);
     }
 
     protected function createAction($planterId){

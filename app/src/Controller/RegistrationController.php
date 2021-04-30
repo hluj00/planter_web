@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\User;
 use App\Entity\UserSettings;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +16,13 @@ use Symfony\Component\Validator\Constraints\Time;
 
 class RegistrationController extends AbstractController
 {
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * @Route("/register", name="app_register")
      */
@@ -34,26 +43,37 @@ class RegistrationController extends AbstractController
             $user->setUsername($form->get('username')->getData());
             $user->setEmail($form->get('email')->getData());
 
+            $user->setHash($this->generateUniqueHash());
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
             $userId = $user->getId();
 
+
             $settings = new UserSettings($userId);
-            $settings->setSendNotifications(true);
+            $settings->setSendNotifications(false);
             $time = new \DateTime();
             $time->setTime(21,0,0);
             $settings->setSendNotificationsAt($time);
+            $settings->setNotificationPeriodType(Notification::$PERIOD_LAST_24H);
             $entityManager->persist($settings);
             $entityManager->flush();
+            return $this->redirectToRoute('login');
 
-            // do anything else you need here, like send an email
-
-            //return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+    }
+
+    private function generateUniqueHash(){
+        do{
+        $random = random_bytes(30);
+        $hash = "user".md5($random);
+        }while(!is_null($this->userRepository->findOneByHash($hash)));
+
+        return $hash;
     }
 }

@@ -25,18 +25,21 @@
     <h1>Planter: <b>{{ planter.getName }}</b></h1>
 
         <div class="block-wrapper">
-            <h2>air humidity</h2>
-            <div id="chart_div" class = "graph"></div>
-            <h2 class="mt-5">air temperature</h2>
-            <div id="chart_div2" class = "graph"></div>
-            <h2 class="mt-5">water level</h2>
-            <div id="chart_div3" class = "graph"></div>
-            <h2 class="mt-5">light</h2>
-            <div id="chart_div4" class = "graph"></div>
+            <h2>water level</h2>
+            <div id="ChartwaterLvl" class = "graph"></div>
             <h2 class="mt-5">soil moisture</h2>
-            <div id="chart_div5" class = "graph"></div>
+            <div id="ChartsoilMoist" class = "graph"></div>
+            <h2 class="mt-5">light</h2>
+            <div id="ChartlightLvl" class = "graph"></div>
+            <h2 class="mt-5">air humidity</h2>
+            <div id="ChartAirHum" class = "graph"></div>
+            <h2 class="mt-5">air temperature</h2>
+            <div id="ChartAirTemp" class = "graph"></div>
 
-            <a href="{{ path('planter_edit' , {id: planter.getId}) }}"><button class="btn btn-info btn-block mt-5">editovat</button></a>
+
+
+            <a href="{{ path('planter_edit' , {id: planter.getId}) }}" class="btn btn-info btn-block mt-5">editovat</a>
+            <a href="{{ path('pair')}}?id={{ planter.getId }}" class="btn btn-secondary btn-block btn-sm mt-2">pair</a>
 
         </div>
 

@@ -119,14 +119,14 @@ class PrepareNotificationsCommand extends Command
                 echo $x ? "jop" : "nope";
                 if ($x){
                     $body = sprintf('{ "value1" : "%s", "value2" : "is below set temperature" }', $planter->getName());
-                    $this->createNewNotification($userId, $sendAt, $body, 1);
+                    $this->createNewNotification($userId, $sendAt, $body, Notification::$TYPE_TEMPERATURE);
                 }
 
                 $x = $this->checkLight($planter->getId(), $plantPresets);
                 echo $x ? "jop" : "nope";
                 if ($x){
                     $body = sprintf('{ "value1" : "%s", "value2" : "didn\'t get enough light yesterday" }', $planter->getName());
-                    $this->createNewNotification($userId, $sendAt, $body, 2);
+                    $this->createNewNotification($userId, $sendAt, $body, Notification::$TYPE_LIGHT_LEVEL);
                 }
             }
 
@@ -140,7 +140,7 @@ class PrepareNotificationsCommand extends Command
         $notification->setUserId($userId);
         $notification->setCreatedAt(new \DateTime('now', new DateTimeZone('Europe/Prague')));
         $notification->setSendAt($sendAt);
-        $notification->setType(2);
+        $notification->setType($type);
         $notification->setValue($body);
         $notification->setSend(false);
         $this->entityManager->persist($notification);

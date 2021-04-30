@@ -33,6 +33,54 @@ class PlanterRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return Planter[] Returns an array of Planter objects
+     */
+    public function findByPlantPresetId($value)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.plant_presets_id = :val')
+            ->setParameter('val', $value)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return Planter[] Returns an array of Planter objects
+     */
+    public function findPlantersWithSameName($userId, $name, $id)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.name = :name')
+            ->andWhere('p.user_id = :userId')
+            ->andWhere('p.id != :id')
+            ->setParameter('userId', $userId)
+            ->setParameter('name', $name)
+            ->setParameter('id', $id)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return Planter[] Returns an array of Planter objects
+     */
+    public function findPlantersByUserIdAndName($userId, $name)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.name = :name')
+            ->andWhere('p.user_id = :userId')
+            ->setParameter('userId', $userId)
+            ->setParameter('name', $name)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 
     /**
      * @param $value

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MainController!{% endblock %}
+
+{% block body %}
+
+<div class="content-wrapper">
+    <h1>How to pair:</h1>
+    <div class="block-wrapper">
+        {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label((form.id)) }}
+            {{ form_widget(form.id, {'attr': {'onchange':"this.form.submit()", 'class': 'form-control'}}) }}
+            {{ form_errors(form.id) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+    {% if planterId is defined and planterId is not null %}
+    <div class="block-wrapper">
+        <ol>
+            <li>Switch your planter to <i>set up mode</i> (switch next to USB).</li>
+            <li>Connect planter to your computer.</li>
+            <li>Open serial monitor - within 15 sec after pluging in.</li>
+            <li>Set these values:</li>
+            <ul>
+                <li>SSID: [name of your wifi]</li>
+                <li>PASSWORD: [password from your wifi]</li>
+                <li>PLANTER ID: {{ planterId }}</li>
+                <li>USER HASH: {{ userHash }}</li>
+            </ul>
+            <li>All done, unplug the planter.</li>
+        </ol>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

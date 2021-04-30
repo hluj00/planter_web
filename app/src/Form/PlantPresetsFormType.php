@@ -32,15 +32,14 @@ class PlantPresetsFormType extends AbstractType
                     ]),
                 ]
             ])
-            ->add('moisture', PercentType::class, [
+            ->add('moisture', NumberType::class, [
                 'required' => true,
                 'label' => 'moisture' ,
-                'symbol' => false,
                 'help' => 'My Help Message',
                 'constraints' => [
                     new Range([
-                        'min' => 0.0,
-                        'max' => 1,
+                        'min' => 0,
+                        'max' => 100,
                         'notInRangeMessage' => 'value must be between 0 and 100']
                     ),
                 ]

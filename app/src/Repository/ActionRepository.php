@@ -19,22 +19,25 @@ class ActionRepository extends ServiceEntityRepository
         parent::__construct($registry, Action::class);
     }
 
-    // /**
-    //  * @return Action[] Returns an array of Action objects
-    //  */
-    /*
-    public function findByExampleField($value)
+     /**
+      * @return Action[] Returns an array of Action objects
+      */
+
+    public function findByPlanterIdTypeExecuted($planterId, $type, $executed)
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
+            ->andWhere('a.planterId = :planter')
+            ->andWhere('a.type = :type')
+            ->andWhere('a.executed = :exec')
+            ->setParameter('planter', $planterId)
+            ->setParameter('type', $type)
+            ->setParameter('exec', $executed)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?Action

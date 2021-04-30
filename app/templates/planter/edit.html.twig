@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit planter: {{ planterName }}{% endblock %}
+{% block title %}Edit planter: {{ planter.getName }}{% endblock %}
 
 
 {% block body %}
 
     <div class="content-wrapper">
-        <h1>Edit planter: <b>{{ planterName }}</b></h1>
+        <h1>Edit planter: <b>{{ planter.getName }}</b></h1>
         <div class="block-wrapper">
             {{ form_start(planterForm) }}
             <div class="form-group">
@@ -17,6 +17,7 @@
             <div class="form-group">
                 {{ form_label((planterForm.plant_presets_id)) }}
                 {{ form_widget(planterForm.plant_presets_id, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(planterForm.plant_presets_id) }}
             </div>
             <div class="form-group">
                 {{ form_label((planterForm.color)) }}
@@ -24,6 +25,7 @@
             </div>
             {{ form_widget(planterForm.save, {'attr': {'class': 'btn btn-primary'}}) }}
             {{ form_widget(planterForm.delete, {'attr': {'class': 'btn btn-danger' , 'onclick': 'return confirm("Are you sure?")'}}) }}
+            <a href="{{ path('pair')}}?id={{ planter.getId }}" class="btn btn-secondary">pair</a>
             {{ form_end(planterForm) }}
         </div>
     </div>

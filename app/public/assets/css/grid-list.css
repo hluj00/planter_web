@@ -2,19 +2,19 @@
     box-sizing: border-box;
 }
 
-a.no-styling{
-    color: #000000;
-    text-decoration: none;
-}
-
 /* Create two equal columns that floats next to each other */
 .column {
-    border-radius: 15px;
+    border-radius: 5px;
     float: left;
     width: 49%;
     padding: 10px;
     margin: 0.5%;
 }
+.column:hover {
+    box-shadow: inset 0 0 100px 100px rgba(0, 0, 0, 0.2);
+}
+
+
 
 /* Clear floats after the columns */
 .row:after {

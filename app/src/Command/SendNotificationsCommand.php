@@ -62,7 +62,11 @@ class SendNotificationsCommand extends Command
         $notifications = $this->notificationRepository->findBySendAndDate(0, $date);
 
         foreach ($notifications as $notification){
-            $this->sendNotification($notification);
+            try {
+                $this->sendNotification($notification);
+            }catch (\RuntimeException $e){
+
+            }
         }
         $this->entityManager->flush();
 
@@ -78,8 +82,10 @@ class SendNotificationsCommand extends Command
         ];
         $url = $this->userSettingsRepository->findOneByUserId($notification->getUserId())->getIftttEndpoint();
 
+        echo $url;
+        echo $options{'body'};
+        echo "test";
         $this->client->request('POST', $url, $options);
-
         $notification->setSend(1);
     }
 

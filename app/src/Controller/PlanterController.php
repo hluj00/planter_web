@@ -52,7 +52,7 @@ class PlanterController extends BaseController
     /**
      * @Route("/planter/new", name="planter_new")
      */
-    public function new(Request $request, PlantPresetsRepository $plantPresetsRepository): Response
+    public function new(Request $request, PlantPresetsRepository $plantPresetsRepository, PlanterRepository $planterRepository): Response
     {
         $userId = $this->getUser()->getId();
         $presets = $plantPresetsRepository->findByUserId($userId);
@@ -61,16 +61,22 @@ class PlanterController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $planter->setName($form->get('name')->getData());
-            $planter->setUserId($userId);
-            $planter->setPlantPresetsId($form->get('plant_presets_id')->getData());
+            $name = $form->get('name')->getData();
+            if (!empty($planterRepository->findPlantersByUserIdAndName($userId,$name))){
+                $this->addFlash('danger', 'You already have planter with this name.');
+            }else{
+                $planter->setName($name);
+                $planter->setUserId($userId);
+                $planter->setPlantPresetsId($form->get('plant_presets_id')->getData());
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($planter);
-            $entityManager->flush();
-            // do anything else you need here, like send an email
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($planter);
+                $entityManager->flush();
+                $this->addFlash('success', 'Created.');
 
-            return $this->redirectToRoute('planter');
+                $planterId = $planter->getId();
+                return $this->redirectToRoute('pair', ['id' => $planterId]);
+            }
         }
 
         return $this->render('planter/new.html.twig', [
@@ -108,11 +114,10 @@ class PlanterController extends BaseController
         $from->setTime(0,0,0);
         $to = $from;
         $to->setTime(23,59,59);
-//        dump($airTemperatureRepository->findByPlanterIdDateAndValue($planterId, $from, $to, 10));
 
 
-        $airHumidityData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
-        $airTemperatureData = $this->mesuremetsToArray($airHumidityRepository->findByPlanterId($id));
+        $airTemperatureData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
+        $airHumidityData = $this->mesuremetsToArray($airHumidityRepository->findByPlanterId($id));
         $waterLevelData = $this->mesuremetsToArray($waterLevelRepository->findByPlanterId($id));
         $lightLevelData = $this->mesuremetsToArray($lightLevelRepository->findByPlanterId($id));
         $soilMoistureData = $this->mesuremetsToArray($soilMoistureRepository->findByPlanterId($id));
@@ -164,33 +169,40 @@ class PlanterController extends BaseController
         $userId = $this->getUser()->getId();
         $presets = $plantPresetsRepository->findByUserId($userId);
         $planter = $planterRepository->findOneById($id);
-        $form = $this->createForm(PlanterFormType::class, $planter, ['trait_choices' => $presets]);
+        $form = $this->createForm(PlanterFormType::class ,$planter, ['trait_choices' => $presets]);
         $form->add( 'delete', SubmitType::class, ['label' => 'delete']);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $delete = $form->get('delete')->isClicked();
             if ($delete){
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->remove($planter);
+                $this->addFlash('success', 'Deleted.');
+                $entityManager->flush();
+                return $this->redirectToRoute('planter');
             }else{
-                $planter->setName($form->get('name')->getData());
-                $planter->setUserId($userId);
-                $planter->setPlantPresetsId($form->get('plant_presets_id')->getData());
+                $name = $form->get('name')->getData();
+                if (!empty($planterRepository->findPlantersWithSameName($userId,$name, $planter->getId()))){
+                    $this->addFlash('danger', 'You already have planter with this name.');
+                }else{
+                    $planter->setName($form->get('name')->getData());
+                    $planter->setUserId($userId);
+                    $planter->setPlantPresetsId($form->get('plant_presets_id')->getData());
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($planter);
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($planter);
+                    $this->addFlash('success', 'Updated.');
+                    $entityManager->flush();
+                    return $this->redirectToRoute('planter');
+                }
             }
-            $entityManager->flush();
-
-            return $this->redirectToRoute('planter');
         }
 
 
         return $this->render('planter/edit.html.twig', [
             'planterForm' => $form->createView(),
-            'planterName' => $planter->getName(),
+            'planter' => $planter,
         ]);
     }
 

@@ -20,6 +20,7 @@
             <div class="form-group">
                 {{ form_label((planterForm.plant_presets_id)) }}
                 {{ form_widget(planterForm.plant_presets_id, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(planterForm.plant_presets_id) }}
             </div>
             <div class="form-group">
                 {{ form_label((planterForm.color)) }}

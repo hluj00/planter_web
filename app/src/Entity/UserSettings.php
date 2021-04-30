@@ -35,6 +35,11 @@ class UserSettings
     private $ifttt_endpoint;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $notificationPeriodType;
+
+    /**
      * UserSettings constructor.
      * @param $user_id
      */
@@ -97,6 +102,18 @@ class UserSettings
     public function __toString()
     {
         return sprintf("[%d] - (%d)\n", $this->user_id, $this->send_notifications);
+    }
+
+    public function getNotificationPeriodType(): ?int
+    {
+        return $this->notificationPeriodType;
+    }
+
+    public function setNotificationPeriodType(int $notificationPeriodType): self
+    {
+        $this->notificationPeriodType = $notificationPeriodType;
+
+        return $this;
     }
 
 

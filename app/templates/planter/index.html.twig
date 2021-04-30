@@ -23,11 +23,12 @@
 
     <div class="row">
         {% for p in planters %}
-            <a class="no-styling" href="{{ path('planter_detail' , {id: p.id}) }}">
-                <div class="column" style="background-color:{{ p.color }}; color: #111111;" >
+            <a class="no-styling text-black" href="{{ path('planter_detail' , {id: p.id}) }}">
+                <div class="column {{ p.color }}" >
                     <h2>{{ p.getName() }}</h2>
-                    <p>{{ presets[p.getPlantPresetsId].name }}</p>
-                    <a href="{{ path('planter_edit' , {id: p.getId}) }}"><button class="btn btn-info">editovat nastavení</button></a>
+                    <img width="30px" height="30px" src="{{ asset('assets/images/water-drop-blue.svg') }}"  alt=""/>
+                    <p>plant: <i>{{ presets[p.getPlantPresetsId].name }}</i></p>
+                    <a href="{{ path('planter_edit' , {id: p.getId}) }}" class="btn btn-dark btn-sm">editovat nastavení</a>
                 </div>
             </a>
         {% endfor %}

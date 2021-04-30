@@ -11,6 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Notification
 {
+    public static $TYPE_WATER_LEVEL = 3;
+    public static $TYPE_LIGHT_LEVEL = 2;
+    public static $TYPE_TEMPERATURE = 1;
+
+    public static $PERIOD_PREVIOUS_DAY = 1;
+    public static $PERIOD_LAST_24H = 2;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

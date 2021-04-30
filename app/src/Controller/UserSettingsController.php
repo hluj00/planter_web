@@ -35,17 +35,12 @@ class UserSettingsController extends BaseController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($userSettings);
             $entityManager->flush();
-
+            $this->addFlash('success', 'Updated.');
         }
-
-        $time = $userSettings->getSendNotificationsAt()->format('H:i:s');
-        dump($time);
-        $time = explode(":", $time);
-        dump($time);
-
 
         return $this->render('user_settings/edit.html.twig', [
             'controller_name' => 'UserSettingsController',
+            'user_hash' => $this->getUser()->getHash(),
             'form' => $form->createView(),
         ]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Notification;
 use App\Entity\UserSettings;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -38,7 +39,14 @@ class UserSettingsFormType extends AbstractType
                 ->add('send_notifications', CheckboxType::class, [
                     'required' => false,
                 ])
-                ->add('ifttt_endpoint', TextType::class)
+                ->add('notification_period_type', ChoiceType::class, array(
+//                    'expanded' => true,
+                    'choices' => [
+                        "previous day" => Notification::$PERIOD_PREVIOUS_DAY,
+                        "last 24 hours" => Notification::$PERIOD_LAST_24H,
+                    ],
+                ))
+                ->add('ifttt_endpoint', TextType::class, ['required' => false])
                 ->add('save', SubmitType::class, ['label' => 'save']);
         });
     }

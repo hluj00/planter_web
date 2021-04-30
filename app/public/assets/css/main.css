@@ -1,7 +1,62 @@
+:root{
+    --green: #f4f1de;
+    --blue: #e07a5f;
+    --dark-blue: #55597e;
+    --purple: #81b29a;
+    --dark-purple: #f2cc8f;
+    --minor-color-1: #aab3b3;
+    --dark-color-1: #111;
+    --main-color-1: #3c4348;
+    --main-color-2: #81b29a;
+}
+
+/*:root{*/
+/*    --green: #5d5c60;*/
+/*    --blue: #938e93;*/
+/*    --dark-blue: #7395ae;*/
+/*    --purple: #557a95;*/
+/*    --dark-purple: #b0a295;*/
+/*    --minor-color-1: #aab3b3;*/
+/*      --dark-color-1: #111;*/
+/*    --main-color-1: #3c4348;*/
+/*    --main-color-2: #557a95;*/
+/*}*/
+
+.bg-green{
+    background: var(--green);
+}
+
+.bg-blue{
+    background: var(--blue);
+}
+
+.bg-dark-blue{
+    background: var(--dark-blue);
+}
+
+.bg-purple{
+    background: var(--purple);
+}
+
+.bg-dark-purple{
+    background: var(--dark-purple);
+}
+
 body {
     font-family: "Lato", sans-serif;
     background: #ececec;
 }
+
+a.no-styling, a.btn{
+    text-decoration: none;
+}
+
+.no-styling:hover{color: initial}
+
+.text-black{
+    color: black;
+}
+
 
 .sidenav {
     height: 100%;
@@ -10,7 +65,7 @@ body {
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #111;
+    background-color: var(--dark-color-1);
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -29,10 +84,10 @@ body {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 15px;
-    color: #b8b8b8;
+    color: var(--dark-color-1);
     display: block;
     transition: 0.3s;
-    background: #123e31;
+    background: var(--main-color-2);
 }
 
 .sidenav a:hover {
@@ -40,6 +95,7 @@ body {
 }
 
 .sidenav .closebtn {
+    display: none;
     position: absolute;
     top: 0;
     right: 25px;
@@ -55,20 +111,53 @@ body {
 .small-wrapper { margin: 1em auto; max-width: 300px; width: 95%; font: 18px/1.5 sans-serif; }
 
 h1, h2, h3{
-    text-align: center;
+    text-align: left;
 }
 
 .block-wrapper{
-    border-radius: 25px;
-    background: #8a8a8a;
+    border-radius: 5px;
+    background: var(--minor-color-1);
     color: #1a1a1a;
     padding: 20px;
-    margin-top: 80px;
     margin-bottom: 20px;
     box-shadow: 40px 50px 50px rgba( 0, 0, 0, 0.18 );
 }
 
+span.menu-button{
+    font-size:30px;
+    cursor:pointer;
+}
+
+.error-box {
+    right: 15px;
+    top: 15px;
+    position: fixed;
+    max-width: 150px;
+    max-height: 40px;
+    min-width: 20%;
+    z-index: 14050;
+}
+
+.shape{
+    width: 25px;
+    height: 25px;
+    background-color: #00eaff;
+    border-radius: 50%;
+    border-top-right-radius: 0;
+    transform: rotate(-45deg);
+    float: left;
+    margin-top: 50px;
+    margin-left: 20px;
+}
+
+
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
+}
+
+@media screen and (max-width: 600px) {
+    .sidenav {width: 0;}
+    .content {margin: auto}
+    .sidenav .closebtn {display: block;}
 }

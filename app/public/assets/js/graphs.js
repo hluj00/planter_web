@@ -20,27 +20,27 @@ function drawCurveTypes() {
 
     var airHumData = new google.visualization.DataTable();
     airHumData.addColumn('datetime', 'Date');
-    airHumData.addColumn('number', 'Stock low');
+    airHumData.addColumn('number', 'air humidity \n(%)');
     airHumData.addRows(airHumidityData);
 
     var airTempData = new google.visualization.DataTable();
     airTempData.addColumn('datetime', 'Date');
-    airTempData.addColumn('number', 'Stock low');
+    airTempData.addColumn('number', 'temperature \n(°C)');
     airTempData.addRows(airTemperatureData);
 
     var waterLvlData = new google.visualization.DataTable();
     waterLvlData.addColumn('datetime', 'Date');
-    waterLvlData.addColumn('number', 'Stock low');
+    waterLvlData.addColumn('number', 'water level \n(%)');
     waterLvlData.addRows(waterLevelData);
 
     var lightLvlData = new google.visualization.DataTable();
     lightLvlData.addColumn('datetime', 'Date');
-    lightLvlData.addColumn('number', 'Stock low');
+    lightLvlData.addColumn('number', 'light \n(lux)');
     lightLvlData.addRows(lightLevelData);
 
     var soilMoistData = new google.visualization.DataTable();
     soilMoistData.addColumn('datetime', 'Date');
-    soilMoistData.addColumn('number', 'Stock low');
+    soilMoistData.addColumn('number', 'soil moisture \n(%)');
     soilMoistData.addRows(soilMoistureData);
 
 
@@ -51,7 +51,8 @@ function drawCurveTypes() {
             title: 'time'
         },
         vAxis: {
-            title: 'air temperature'
+            title: 'air temperature',
+            ticks: [15, 20, 25, 30, 35,]
         },
         series: {
             1: {curveType: 'function'}
@@ -63,7 +64,8 @@ function drawCurveTypes() {
             title: 'time'
         },
         vAxis: {
-            title: 'air humidity'
+            title: 'air humidity',
+            ticks: [20, 40, 60, 80, 100]
         },
         series: {
             1: {curveType: 'function'}
@@ -75,7 +77,8 @@ function drawCurveTypes() {
             title: 'time'
         },
         vAxis: {
-            title: 'water level'
+            title: 'water level',
+            ticks: [0, 25, 50, 75, 100]
         },
         series: {
             1: {curveType: 'function'}
@@ -87,7 +90,9 @@ function drawCurveTypes() {
             title: 'time'
         },
         vAxis: {
-            title: 'light'
+            title: 'light',
+            scaleType: 'log',
+            ticks: [0, 1000, 10000, 100000]
         },
         series: {
             1: {curveType: 'function'}
@@ -99,7 +104,8 @@ function drawCurveTypes() {
             title: 'time'
         },
         vAxis: {
-            title: 'soil moisture'
+            title: 'soil moisture',
+            ticks: [0, 25, 50, 75, 100]
         },
         series: {
             1: {curveType: 'function'}
@@ -107,14 +113,14 @@ function drawCurveTypes() {
     };
 
 
-    var AirTempChart = new google.visualization.LineChart(document.getElementById('chart_div'));
-    var AirHumChart = new google.visualization.LineChart(document.getElementById('chart_div2'));
-    var waterLvlChart = new google.visualization.LineChart(document.getElementById('chart_div3'));
-    var lightLvlChart = new google.visualization.LineChart(document.getElementById('chart_div4'));
-    var soilMoistChart = new google.visualization.LineChart(document.getElementById('chart_div5'));
+    var AirTempChart = new google.visualization.LineChart(document.getElementById('ChartAirTemp'));
+    var AirHumChart = new google.visualization.LineChart(document.getElementById('ChartAirHum'));
+    var waterLvlChart = new google.visualization.LineChart(document.getElementById('ChartwaterLvl'));
+    var lightLvlChart = new google.visualization.LineChart(document.getElementById('ChartlightLvl'));
+    var soilMoistChart = new google.visualization.LineChart(document.getElementById('ChartsoilMoist'));
 
-    AirTempChart.draw(airHumData, AirTempOptions);
-    AirHumChart.draw(airTempData, AirHumOptions);
+    AirTempChart.draw(airTempData, AirTempOptions);
+    AirHumChart.draw(airHumData, AirHumOptions);
     waterLvlChart.draw(waterLvlData, waterLvlOptions);
     lightLvlChart.draw(lightLvlData, lightLvlOptions);
     soilMoistChart.draw(soilMoistData, soilMoistOptions);

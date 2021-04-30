@@ -8,6 +8,7 @@ use App\Entity\WaterLevel;
 use App\Form\PlantPresetsFormType;
 use App\Repository\LightLevelRepository;
 use App\Repository\NotificationRepository;
+use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
 use App\Repository\WaterLevelRepository;
@@ -76,16 +77,19 @@ class PlantPresetsController extends BaseController
         NotificationRepository $notificationRepository,
         SoilMoistureRepository $soilMoistureRepository,
 
-        Request $request, PlantPresetsRepository $plantPresetsRepository, $id): Response
+        Request $request,
+        PlantPresetsRepository $plantPresetsRepository,
+        PlanterRepository $planterRepository,
+        $id): Response
     {
-        $plantPresets = $plantPresetsRepository->findOneById($id);
-        if ($plantPresets === null){
+        $plantPreset = $plantPresetsRepository->findOneById($id);
+        if ($plantPreset === null){
             return $this->renderUnauthorised();
             //todo neexistuje
-        }else if (!$this->canEdit($this->getUser(), $plantPresets)){
+        }else if (!$this->canEdit($this->getUser(), $plantPreset)){
             return $this->renderUnauthorised();
         }
-        $form = $this->createForm(PlantPresetsFormType::class, $plantPresets)
+        $form = $this->createForm(PlantPresetsFormType::class, $plantPreset)
             ->add( 'delete', SubmitType::class, ['label' => 'delete']);
         $form->handleRequest($request);
 
@@ -94,30 +98,41 @@ class PlantPresetsController extends BaseController
 
 //        $this->notificationAlreadyExists($notificationRepository, 2, 3);
 //        $this->checkWaterLevel($waterLevelRepository, 1, $plantPresets);
-        $this->lowMoisture($soilMoistureRepository,1, $plantPresets);
+        $this->lowMoisture($soilMoistureRepository,1, $plantPreset);
 //        =======================================================================
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $delete = $form->get('delete')->isClicked();
             if ($delete){
-                $entityManager->remove($plantPresets);
+                if (!empty($planterRepository->findByPlantPresetId($plantPreset->getId()))){
+                    $this->addFlash('danger', 'can\'t delete. some planter is using this');
+                }else{
+                    $entityManager->remove($plantPreset);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Deleted.');
+                }
+
             }else{
-                $plantPresets->setName($form->get('name')->getData());
-                $plantPresets->setLightDuration($form->get('light_duration')->getData());
-                $plantPresets->setLightLevel($form->get('light_level')->getData());
-                $plantPresets->setMoisture($form->get('moisture')->getData());
-                $plantPresets->setTemperature($form->get('temperature')->getData());
-                $plantPresets->setUserId($this->getUser()->getId());
+                $plantPreset->setName($form->get('name')->getData());
+                $plantPreset->setLightDuration($form->get('light_duration')->getData());
+                $plantPreset->setLightLevel($form->get('light_level')->getData());
+                $plantPreset->setMoisture($form->get('moisture')->getData());
+                $plantPreset->setTemperature($form->get('temperature')->getData());
+                $plantPreset->setUserId($this->getUser()->getId());
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Updated.');
             }
-            $entityManager->flush();
+
+
 
             return $this->redirectToRoute('plant_presets');
         }
 
         return $this->render('PlantPresets/edit.html.twig', [
             'presetsForm' => $form->createView(),
-            'plantPreset' => $plantPresets,
+            'plantPreset' => $plantPreset,
             'test' => $id
         ]);
     }

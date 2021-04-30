@@ -91,29 +91,19 @@ class PrepareHourlyNotificationsCommand extends Command
 
         $settings = $this->userSettingsRepository->findAll();
 
-        echo "no ty kokos";
         $timeNow = new \DateTime('now', new DateTimeZone('Europe/Prague'));
         foreach ($settings as $userSetting){
-            echo  $userSetting;
             $userId = $userSetting->getUserId();
             $planters = $this->planterRepository->findByUserId($userId);
             foreach ($planters as $planter){
                 $plantPresets = $this->plantPresetsRepository->findOneById($planter->getPlantPresetsId());
 
-                $x = $this->checkWaterLevel($planter->getId(), $plantPresets);
-                echo $x ? "jop".$timeNow->format("d.m.y. - H:m.s.") : "nope";
                 $notificationExists = $this->notificationAlreadyExists($userId,3);
-                if ($x && !$notificationExists){
+                $x = $this->checkWaterLevel($planter->getId(), $plantPresets) && !$notificationExists;
+                if ($x){
                     $sendAt = $this->notificationSendYesterday($userId,3) ? $userSetting->getSendNotificationsAtToday() : $timeNow;
-                    $notification = new Notification();
-                    $notification->setUserId($userId);
-                    $notification->setCreatedAt($timeNow);
-                    $notification->setSendAt($sendAt);
-                    $notification->setType(3);
-                    $notification->setValue("water");
-                    $notification->setSend(false);
-                    $this->entityManager->persist($notification);
-                    $this->entityManager->flush();
+                    $body = sprintf('{ "value1" : "%s", "value2" : "is running low on water" }', $planter->getName());
+                    $this->createNewNotification($userId, $sendAt, $body, Notification::$TYPE_WATER_LEVEL);
                 }
             }
         }
@@ -147,5 +137,17 @@ class PrepareHourlyNotificationsCommand extends Command
         $result = $this->waterLevelRepository->findByPlanterIdDatesAndValue($planterId, $from, $to, $minValue);
 
         return !empty($result);
+    }
+
+    private function createNewNotification($userId,$sendAt,$body,$type){
+        $notification = new Notification();
+        $notification->setUserId($userId);
+        $notification->setCreatedAt(new \DateTime('now', new DateTimeZone('Europe/Prague')));
+        $notification->setSendAt($sendAt);
+        $notification->setType($type);
+        $notification->setValue($body);
+        $notification->setSend(false);
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
     }
 }

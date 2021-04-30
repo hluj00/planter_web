@@ -3,8 +3,15 @@ MAINTAINER jan hlubucek <jhlubucek@jhlubucek.cz>
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get update && apt-get install -y git libzip-dev unzip \
+    && apt-get install -y \
+            cron \
     && docker-php-ext-install zip pdo pdo_mysql \
     && a2enmod rewrite headers
+
+RUN echo '*/5 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:create-actions' >>/etc/crontab
+RUN echo '*/10 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-hourly-notifications' >>/etc/crontab
+RUN echo '*/10 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:send-notifications' >>/etc/crontab
+RUN echo '5 0 * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-notifications' >>/etc/crontab
 
 COPY . /var/www/html
 
