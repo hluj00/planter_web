@@ -8,6 +8,7 @@ use App\Entity\UserSettings;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,33 +34,40 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                $passwordEncoder->encodePassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
-            $user->setUsername($form->get('username')->getData());
-            $user->setEmail($form->get('email')->getData());
+            $userName = $form->get('username')->getData();
+            $duplicateUser = $this->userRepository->findOneByUsername($userName);
+            if (is_null($duplicateUser)) {
 
-            $user->setHash($this->generateUniqueHash());
+                // encode the plain password
+                $user->setPassword(
+                    $passwordEncoder->encodePassword(
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
+                $user->setUsername($form->get('username')->getData());
+                $user->setEmail($form->get('email')->getData());
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-            $userId = $user->getId();
+                $user->setHash($this->generateUniqueHash());
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($user);
+                $entityManager->flush();
+                $userId = $user->getId();
 
 
-            $settings = new UserSettings($userId);
-            $settings->setSendNotifications(false);
-            $time = new \DateTime();
-            $time->setTime(21,0,0);
-            $settings->setSendNotificationsAt($time);
-            $settings->setNotificationPeriodType(UserSettings::$PERIOD_LAST_24H);
-            $entityManager->persist($settings);
-            $entityManager->flush();
-            return $this->redirectToRoute('login');
+                $settings = new UserSettings($userId);
+                $settings->setSendNotifications(false);
+                $time = new \DateTime();
+                $time->setTime(21, 0, 0);
+                $settings->setSendNotificationsAt($time);
+                $settings->setNotificationPeriodType(UserSettings::$PERIOD_LAST_24H);
+                $entityManager->persist($settings);
+                $entityManager->flush();
+                return $this->redirectToRoute('login');
+            }else{
+                $form->get('username')->addError(new FormError('this username already exists'));
+            }
 
         }
 

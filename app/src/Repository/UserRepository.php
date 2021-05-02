@@ -67,4 +67,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             return null;
         }
     }
+
+    public function findOneByUsername($value): ?User
+    {
+        try {
+            return $this->createQueryBuilder('u')
+                ->andWhere('u.username = :val')
+                ->setParameter('val', $value)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
+    }
 }
