@@ -9,9 +9,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     && a2enmod rewrite headers
 
 RUN echo '*/5 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:create-actions' >>/etc/crontab
-RUN echo '*/10 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-hourly-notifications' >>/etc/crontab
-RUN echo '*/10 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:send-notifications' >>/etc/crontab
-RUN echo '5 0 * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-notifications' >>/etc/crontab
+RUN echo '55 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-daily-notifications' >>/etc/crontab
+RUN echo '*/5 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:prepare-notifications' >>/etc/crontab
+RUN echo '*/2 * * * * root cd /var/www/html/app && /usr/local/bin/php bin/console app:send-notifications' >>/etc/crontab
 
 COPY . /var/www/html
 

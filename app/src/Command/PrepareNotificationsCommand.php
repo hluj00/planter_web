@@ -2,13 +2,14 @@
 
 namespace App\Command;
 
+use App\Entity\Notification;
 use App\Entity\PlantPresets;
 use App\Repository\AirTemperatureRepository;
-use App\Entity\Notification;
-use App\Repository\LightLevelRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\UserSettingsRepository;
+use App\Repository\WaterLevelRepository;
 use DateInterval;
 use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,104 +41,157 @@ class PrepareNotificationsCommand extends Command
     private $plantPresetsRepository;
 
     /**
-     * @var AirTemperatureRepository
+     * @var WaterLevelRepository
      */
-    private $airTemperatureRepository;
-
-    /**
-     * @var LightLevelRepository
-     */
-    private $lightLevelRepository;
+    private $waterLevelRepository;
 
     /**
      * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(
-        UserSettingsRepository $userSettingsRepository,
-        PlanterRepository $planterRepository,
-        PlantPresetsRepository $plantPresetsRepository,
-        AirTemperatureRepository $airTemperatureRepository,
-        LightLevelRepository $lightLevelRepository,
-        EntityManagerInterface $entityManager
-    )
-    {
-        $this->userSettingsRepository = $userSettingsRepository;
-        $this->planterRepository = $planterRepository;
-        $this->plantPresetsRepository = $plantPresetsRepository;
-        $this->airTemperatureRepository = $airTemperatureRepository;
-        $this->lightLevelRepository = $lightLevelRepository;
-        $this->entityManager = $entityManager;
+    /**
+     * @var NotificationRepository
+     */
+    private $notificationRepository;
 
-        parent::__construct();
-    }
+    /**
+     * @var AirTemperatureRepository
+     */
+    private $airTemperatureRepository;
 
     protected function configure()
     {
         $this
-            ->setDescription('analyses data and prepares notifications to be send.')
+            ->setDescription(self::$defaultDescription)
             ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
 
+    public function __construct(
+        UserSettingsRepository $userSettingsRepository,
+        PlanterRepository $planterRepository,
+        PlantPresetsRepository $plantPresetsRepository,
+        WaterLevelRepository $waterLevelRepository,
+        AirTemperatureRepository $airTemperatureRepository,
+        EntityManagerInterface $entityManager,
+        NotificationRepository $notificationRepository
+    )
+    {
+        $this->userSettingsRepository = $userSettingsRepository;
+        $this->planterRepository = $planterRepository;
+        $this->plantPresetsRepository = $plantPresetsRepository;
+        $this->waterLevelRepository = $waterLevelRepository;
+        $this->entityManager = $entityManager;
+        $this->notificationRepository = $notificationRepository;
+        $this->airTemperatureRepository = $airTemperatureRepository;
+
+        parent::__construct();
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $from = new \DateTime('1970-01-01');
-        $to = new \DateTime('1970-01-01');
-        $to->add(new DateInterval('PT1H'));
-
-
+        $io = new SymfonyStyle($input, $output);
         $settings = $this->userSettingsRepository->findAll();
 
-        $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        echo "no ty kokossss";
+        $timeNow = new \DateTime('now', new DateTimeZone('Europe/Prague'));
         foreach ($settings as $userSetting){
-            echo  $userSetting;
             $userId = $userSetting->getUserId();
             $planters = $this->planterRepository->findByUserId($userId);
-
-            $sendAt = $userSetting->getSendNotificationsAtToday();
-
-
             foreach ($planters as $planter){
-                echo $planter->getName();
                 $plantPresets = $this->plantPresetsRepository->findOneById($planter->getPlantPresetsId());
+                $planterId = $planter->getId();
 
-                $x = $this->checkTemperature($planter->getId(), $plantPresets);
-                echo $x ? "jop" : "nope";
-                if ($x){
-                    $body = sprintf('{ "value1" : "%s", "value2" : "is below set temperature" }', $planter->getName());
-                    $this->createNewNotification($userId, $sendAt, $body, Notification::$TYPE_TEMPERATURE);
+                $lowWater = $this->lowWater($planterId);
+                $waterNotificationAlreadyCreated = $this->notificationCreatedToday($planterId, Notification::$TYPE_WATER_LEVEL);
+
+                if ($lowWater && !$waterNotificationAlreadyCreated){
+                    echo "sending\n";
+                    $sendAt = $this->notificationSendYesterday($planterId,3) ? $userSetting->getSendNotificationsAtToday() : $timeNow;
+                    $body = sprintf('{ "value1" : "%s", "value2" : "is running low on water" }', $planter->getName());
+                    $this->createNewNotification($userId, $planterId, $sendAt, $body, Notification::$TYPE_WATER_LEVEL);
                 }
 
-                $x = $this->checkLight($planter->getId(), $plantPresets);
-                echo $x ? "jop" : "nope";
-                if ($x){
-                    $body = sprintf('{ "value1" : "%s", "value2" : "didn\'t get enough light yesterday" }', $planter->getName());
-                    $this->createNewNotification($userId, $sendAt, $body, Notification::$TYPE_LIGHT_LEVEL);
+                $lowTemp = $this->lowTemperature($planterId, $plantPresets);
+                $shouldSend = $this->shouldSendTemperatureNotification($planterId);
+
+                if ($lowTemp && $shouldSend){
+                    echo "sending\n";
+                    $body = sprintf('{ "value1" : "%s", "value2" : "is below minimal temperature" }', $planter->getName());
+                    $this->createNewNotification($userId, $planterId, $timeNow, $body, Notification::$TYPE_TEMPERATURE);
                 }
             }
-
         }
-
         return Command::SUCCESS;
     }
 
-    private function createNewNotification($userId,$sendAt,$body,$type){
+    protected function lowWater($planterId){
+        $water = $this->waterLevelRepository->findLastInTenMinutes($planterId);
+        return ( isset($water[0]) && $water[0]->getValue() < 50 );
+    }
+
+    protected function lowTemperature($planterId,PlantPresets $plantPresets){
+        $water = $this->airTemperatureRepository->findLastInTenMinutes($planterId);
+        $minTemp = $plantPresets->getTemperature();
+        return ( isset($water[0]) && $water[0]->getValue() < $minTemp );
+    }
+
+    private function notificationCreatedToday($planterId, $notifType): bool
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
+        $date->setTime(0,0,0);
+        $result = $this->notificationRepository->findNewest($planterId ,$date ,$notifType);
+        return !empty($result);
+    }
+
+    private function shouldSendTemperatureNotification($planterId){
+        $notificationAlreadyCreated = $this->notificationCreatedInLatTenMinutes($planterId, Notification::$TYPE_TEMPERATURE);
+        if ($notificationAlreadyCreated)
+            return false;
+
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
+        $date->setTime(0,0,0);
+        $result = $this->notificationRepository->findNewest($planterId ,$date ,Notification::$TYPE_TEMPERATURE);
+        if ( isset($result[0]) ){
+            $lastNotif = $result[0]->getCreatedAt();
+            $temperatures = $this->airTemperatureRepository->findByPlanterIdDate($planterId, $lastNotif);
+            $min = $max = $temperatures[0]->getValue();
+            foreach ($temperatures as $temperature){
+                if ($temperature->getValue() > $max){
+                    $max = $temperature->getValue();
+                }else if($temperature->getValue() < $min){
+                    $min = $temperature->getValue();
+                }
+            }
+            if ( $max - $min < 2){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function notificationCreatedInLatTenMinutes($planterId, $notifType): bool
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
+        $date->modify('-10 minutes');
+        $result = $this->notificationRepository->findNewest($planterId ,$date ,$notifType);
+        return !empty($result);
+    }
+
+    private function notificationSendYesterday($planterId, $notifType): bool
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $date->sub(new DateInterval('P1D'));
+        $date->setTime(0,0,0);
+        $result = $this->notificationRepository->findNewest($planterId ,$date ,$notifType);
+        return !empty($result);
+    }
+
+    private function createNewNotification($userId, $planterId,$sendAt,$body,$type){
         $notification = new Notification();
         $notification->setUserId($userId);
+        $notification->setPlanterId($planterId);
         $notification->setCreatedAt(new \DateTime('now', new DateTimeZone('Europe/Prague')));
         $notification->setSendAt($sendAt);
         $notification->setType($type);
@@ -145,47 +199,5 @@ class PrepareNotificationsCommand extends Command
         $notification->setSend(false);
         $this->entityManager->persist($notification);
         $this->entityManager->flush();
-    }
-
-    private function checkTemperature(int $planterId, PlantPresets $plantPresets): bool
-    {
-        $minTemp = $plantPresets->getTemperature();
-
-        $from = new \DateTime('now', new DateTimeZone('Europe/Prague'));
-        $from->sub(new DateInterval('P1D'));
-        $from->setTime(0,0,0);
-        $to = new \DateTime('now', new DateTimeZone('Europe/Prague'));
-        $to->sub(new DateInterval('P1D'));
-        $to->setTime(23,59,59);
-        $result = $this->airTemperatureRepository->findByPlanterIdDatesAndValue($planterId, $from, $to, $minTemp);
-
-        return !empty($result);
-    }
-
-    private function checkLight(int $planterId, PlantPresets $plantPresets): bool{
-        $minVaue = $plantPresets->getLightLevel();
-        $minTime = $plantPresets->getLightDuration() * 3600;
-
-        //get data from db
-        $from = new \DateTime('now', new DateTimeZone('Europe/Prague'));
-        $from->sub(new DateInterval('P1D'));
-        $from->setTime(0,0,0);
-        $to = new \DateTime('now', new DateTimeZone('Europe/Prague'));
-        $to->sub(new DateInterval('P1D'));
-        $to->setTime(23,59,59);
-        $data = $this->lightLevelRepository->findByPlanterIdAndDates($planterId, $from, $to);
-
-
-        $size = sizeof($data);
-        $timeTotal = 0;
-        for ($i = 1; $i< $size; $i++){
-            if ($data[$i-1]->getValue() + $data[$i-1]->getValue() > $minVaue * 2){
-                $time1 = strtotime($data[$i-1]->getDate()->format('Y-m-d H:i:s'));
-                $time2 = strtotime($data[$i]->getDate()->format('Y-m-d H:i:s'));
-                $timeTotal += $time2 - $time1;
-            }
-        }
-
-        return($timeTotal < $minTime);
     }
 }

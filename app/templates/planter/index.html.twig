@@ -13,24 +13,52 @@
     <h1>Planters</h1>
 
     <div class="block-wrapper">
-    <p>Click on a button to choose list view or grid view.</p>
 
-    <div id="btnContainer">
-        <button class="btn btn-custom" onclick="listView()"><i class="fa fa-bars"></i> List</button>
-        <button class="btn btn-custom active" onclick="gridView()"><i class="fa fa-th-large"></i> Grid</button>
-    </div>
-    <br>
 
     <div class="row">
         {% for p in planters %}
-            <a class="no-styling text-black" href="{{ path('planter_detail' , {id: p.id}) }}">
-                <div class="column {{ p.color }}" >
+
+            <div class="column {{ p.color }}">
+                <div class="main">
                     <h2>{{ p.getName() }}</h2>
-                    <img width="30px" height="30px" src="{{ asset('assets/images/water-drop-blue.svg') }}"  alt=""/>
                     <p>plant: <i>{{ presets[p.getPlantPresetsId].name }}</i></p>
-                    <a href="{{ path('planter_edit' , {id: p.getId}) }}" class="btn btn-dark btn-sm">editovat nastavení</a>
                 </div>
-            </a>
+                <div class="data right" style="">
+                    <table style="border-collapse: separate; border-spacing: 5px;">
+
+                        <tr class="spaceUnder">
+                            {% if data[p.getId]["lowWater"] %}
+                                <td><img width="30px" height="30px" src="{{ asset('assets/images/droplet_red.svg') }}" title="water level - LOW" alt="water"></td>
+                            {% else %}
+                                <td><img width="30px" height="30px" src="{{ asset('assets/images/droplet.svg') }}" title="water level" alt="water"></td>
+                            {% endif %}
+                            <td>{{ data[p.getId]["waterLevel"]}}</td>
+                            <td>%</td>
+                        </tr>
+                        <tr>
+                            {% if data[p.getId]["lowTemperature"] %}
+                            <td><img width="30px" height="30px" src="{{ asset('assets/images/thermometer_red.svg') }}" title="temperature - LOW" alt="temp"></td>
+                            {% else %}
+                            <td><img width="30px" height="30px" src="{{ asset('assets/images/thermometer.svg') }}" title="temperature" alt="temp"></td>
+                            {% endif %}
+                            <td>{{ data[p.getId]["airTemperature"]}}</td>
+                            <td>°C</td>
+                        </tr>
+                        <tr>
+                            {% if data[p.getId]["lowLight"] %}
+                                <td><img width="30px" height="30px" src="{{ asset('assets/images/sun_red.svg') }}" title="light - LOW" alt="light"></td>
+                            {% else %}
+                                <td><img width="30px" height="30px" src="{{ asset('assets/images/sun.svg') }}" title="light" alt="light"></td>
+                            {% endif %}
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="buttons">
+                    <a href="{{ path('planter_detail' , {planterId: p.id}) }}" class="btn btn-dark btn btn-48">detail</a>
+                    <a href="{{ path('planter_edit' , {planterId: p.getId}) }}" class="btn btn-dark btn btn-48">edit</a>
+                </div>
+            </div>
         {% endfor %}
     </div>
         <a href="{{ path('planter_new') }}" class="btn btn-primary btn-block">add new</a>

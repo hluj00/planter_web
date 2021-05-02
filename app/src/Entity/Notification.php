@@ -15,9 +15,6 @@ class Notification
     public static $TYPE_LIGHT_LEVEL = 2;
     public static $TYPE_TEMPERATURE = 1;
 
-    public static $PERIOD_PREVIOUS_DAY = 1;
-    public static $PERIOD_LAST_24H = 2;
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -54,6 +51,11 @@ class Notification
      * @ORM\Column(type="integer")
      */
     private $user_id;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $planter_id;
 
 
 
@@ -129,6 +131,18 @@ class Notification
     public function setUserId(int $user_id): self
     {
         $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getPlanterId(): ?int
+    {
+        return $this->planter_id;
+    }
+
+    public function setPlanterId(int $planter_id): self
+    {
+        $this->planter_id = $planter_id;
 
         return $this;
     }

@@ -15,7 +15,7 @@
                 <th>temperature</th>
                 <th>min light level</th>
                 <th>light duration</th>
-                <th>editace</th>
+                <th>edit</th>
             </tr>
             </thead>
             <tbody>
@@ -26,7 +26,7 @@
                     <td>{{ c.temperature }} °C</td>
                     <td>{{ c.lightLevel }} lux</td>
                     <td>{{ c.lightDuration}} h</td>
-                    <td><a class="btn btn-dark btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edituj</a></td>
+                    <td><a class="btn btn-dark btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edit</a></td>
                 </tr>
             {% endfor %}
             <tbody>

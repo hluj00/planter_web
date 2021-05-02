@@ -8,6 +8,7 @@ use App\Repository\PlanterRepository;
 use App\Repository\UserSettingsRepository;
 use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
+use http\Client\Curl\User;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use function Symfony\Component\String\b;
 use function Symfony\Component\Translation\t;
 
 class SendNotificationsCommand extends Command
@@ -70,8 +72,6 @@ class SendNotificationsCommand extends Command
         }
         $this->entityManager->flush();
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
-
         return Command::SUCCESS;
     }
 
@@ -82,10 +82,12 @@ class SendNotificationsCommand extends Command
         ];
         $url = $this->userSettingsRepository->findOneByUserId($notification->getUserId())->getIftttEndpoint();
 
-        echo $url;
-        echo $options{'body'};
-        echo "test";
-        $this->client->request('POST', $url, $options);
+        try {
+            $this->client->request('POST', $url, $options);
+            echo sprintf("notification with ID: %s send\n",$notification->getId());
+        }catch (\Error $e){
+            echo sprintf("unable to send notification with ID: %s\n",$notification->getId());
+        }
         $notification->setSend(1);
     }
 

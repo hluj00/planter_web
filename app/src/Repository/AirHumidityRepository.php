@@ -22,15 +22,16 @@ class AirHumidityRepository extends ServiceEntityRepository
      /**
       * @return AirHumidity[] Returns an array of AirHumidity objects
       */
-    public function findByPlanterId($value)
+    public function findByPlanterIdAndDate($id, $from)
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.planter_id = :val')
-            ->setParameter('val', $value)
+            ->andWhere('a.date > :date')
+            ->setParameter('val', $id)
+            ->setParameter('date', $from)
             ->orderBy('a.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
 

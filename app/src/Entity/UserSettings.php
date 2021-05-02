@@ -11,6 +11,9 @@ use phpDocumentor\Reflection\Types\This;
  */
 class UserSettings
 {
+    public static $PERIOD_PREVIOUS_DAY = 1;
+    public static $PERIOD_LAST_24H = 2;
+
 
 
     /**

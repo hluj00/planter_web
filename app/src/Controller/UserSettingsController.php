@@ -25,12 +25,19 @@ class UserSettingsController extends BaseController
         $form = $this->createForm(UserSettingsFormType::class, $userSettings);
         $form->handleRequest($request);
 
+        dump($form->getErrors());
         if ($form->isSubmitted() && $form->isValid()) {
 //            dump($form->get('send_notifications_at')->getData());
 //            dump($form->get('send_notifications')->getData());
 
+            $sendNotifications = $form->get('send_notifications')->getData() ? 1 : 0;
+//            if($sendNotifications){
+//            $form->addError(new F)
+//            }
+
             $userSettings->setSendNotificationsAt($form->get('send_notifications_at')->getData());
-            $userSettings->setSendNotifications($form->get('send_notifications')->getData() ? 1 : 0);
+            $userSettings->setSendNotifications($sendNotifications);
+
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($userSettings);

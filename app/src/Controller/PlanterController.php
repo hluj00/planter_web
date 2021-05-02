@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\Planter;
 use App\Entity\PlantPresets;
 use App\Form\PlanterFormType;
 use App\Repository\AirHumidityRepository;
 use App\Repository\AirTemperatureRepository;
 use App\Repository\LightLevelRepository;
+use App\Repository\NotificationRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
@@ -27,42 +29,97 @@ use Symfony\Component\Validator\Constraints\DateTime;
 
 class PlanterController extends BaseController
 {
+    private $planterRepository;
+    private $plantPresetsRepository;
+    private $airTemperatureRepository;
+    private $waterLevelRepository;
+    private $notificationRepository;
+    private $airHumidityRepository;
+    private $lightLevelRepository;
+    private $soilMoistureRepository;
+
+    public function __construct(
+        PlanterRepository $planterRepository,
+        PlantPresetsRepository $plantPresetsRepository,
+        AirTemperatureRepository $airTemperatureRepository,
+        WaterLevelRepository $waterLevelRepository,
+        NotificationRepository $notificationRepository,
+        AirHumidityRepository $airHumidityRepository,
+        LightLevelRepository $lightLevelRepository,
+        SoilMoistureRepository $soilMoistureRepository
+    )
+    {
+        $this->planterRepository = $planterRepository;
+        $this->plantPresetsRepository = $plantPresetsRepository;
+        $this->airTemperatureRepository = $airTemperatureRepository;
+        $this->waterLevelRepository = $waterLevelRepository;
+        $this->notificationRepository = $notificationRepository;
+        $this->airHumidityRepository = $airHumidityRepository;
+        $this->lightLevelRepository = $lightLevelRepository;
+        $this->soilMoistureRepository = $soilMoistureRepository;
+    }
+
     /**
      * @Route("/planter", name="planter")
      */
-    public function index(PlanterRepository $planterRepository, PlantPresetsRepository $plantPresetsRepository): Response
+    public function index(): Response
     {
         $userId = $this->getUser()->getId();
 
-        $planters = $planterRepository->findByUserId($userId);
-        $presets = $plantPresetsRepository->findByUserId($userId);
+
+        $planters = $this->planterRepository->findByUserId($userId);
+        $presets = $this->plantPresetsRepository->findByUserId($userId);
         $presetArray = [];
+        $data = [];
+
         foreach ($presets as $preset){
             $presetArray[$preset->getId()] = $preset;
         }
 
-//        dump($presetArray);
+        foreach ($planters as $planter){
+            $planterId = $planter->getId();
+            $temp = $this->airTemperatureRepository->findLastInTenMinutes($planterId);
+            $temp = isset($temp[0]) ? $temp[0]->getValue() : '--';
+            $data[$planterId]['airTemperature'] = $temp;
+
+            $water = $this->waterLevelRepository->findLastInTenMinutes($planterId);
+            $water = isset($water[0]) ? round($water[0]->getValue()) : '--';
+            $data[$planterId]['waterLevel'] = $water;
+
+            $preset = $presetArray[$planter->getPlantPresetsId()];
+            $lightNotifications = $this->notificationRepository->findTodayNotifications($planterId, Notification::$TYPE_LIGHT_LEVEL);
+
+
+            $data[$planterId]['lowTemperature'] = ($temp != '--' && $preset->getTemperature() > $temp);
+            $data[$planterId]['lowWater'] = ($temp != '--' &&  $water < 15);
+            $data[$planterId]['lowLight'] = !empty($lightNotifications);
+        }
+
+
+
+        dump($data);
         return $this->render('planter/index.html.twig', [
             'controller_name' => 'PlanterController',
             'planters' => $planters,
             'presets' => $presetArray,
+            'data' => $data
         ]);
     }
 
     /**
      * @Route("/planter/new", name="planter_new")
      */
-    public function new(Request $request, PlantPresetsRepository $plantPresetsRepository, PlanterRepository $planterRepository): Response
+    public function new(Request $request): Response
     {
         $userId = $this->getUser()->getId();
-        $presets = $plantPresetsRepository->findByUserId($userId);
+        $presets = $this->plantPresetsRepository->findByUserId($userId);
         $planter = new Planter();
         $form = $this->createForm(PlanterFormType::class, $planter, ['trait_choices' => $presets]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get('name')->getData();
-            if (!empty($planterRepository->findPlantersByUserIdAndName($userId,$name))){
+            if (!empty($this->planterRepository->findPlantersByUserIdAndName($userId,$name))){
                 $this->addFlash('danger', 'You already have planter with this name.');
             }else{
                 $planter->setName($name);
@@ -85,42 +142,24 @@ class PlanterController extends BaseController
     }
 
     /**
-     * @Route("/planter/detail/{id}", name="planter_detail")
+     * @Route("/planter/detail/{planterId}", name="planter_detail")
      */
-    public function detail(
-        Request $request,
-        PlantPresetsRepository $plantPresetsRepository,
-        PlanterRepository $planterRepository,
-        AirTemperatureRepository $airTemperatureRepository,
-        AirHumidityRepository $airHumidityRepository,
-        WaterLevelRepository $waterLevelRepository,
-        LightLevelRepository $lightLevelRepository,
-        SoilMoistureRepository $soilMoistureRepository,
-        $id): Response
+    public function detail($planterId): Response
     {
         $encoders = array(new JsonEncoder());
         $normalizers = array(new GetSetMethodNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
 
-
-
-        $userId = $this->getUser()->getId();
-        $planter = $planterRepository->findOneById($id);
-        $planterId = $planter->getId();
-
-
         $from = new \DateTime();
-        $from->sub(new DateInterval('PT1H'));
-        $from->setTime(0,0,0);
-        $to = $from;
-        $to->setTime(23,59,59);
+        $from->modify('-3 days');
 
+        $planter = $this->planterRepository->findOneById($planterId);
 
-        $airTemperatureData = $this->mesuremetsToArray($airTemperatureRepository->findByPlanterId($id));
-        $airHumidityData = $this->mesuremetsToArray($airHumidityRepository->findByPlanterId($id));
-        $waterLevelData = $this->mesuremetsToArray($waterLevelRepository->findByPlanterId($id));
-        $lightLevelData = $this->mesuremetsToArray($lightLevelRepository->findByPlanterId($id));
-        $soilMoistureData = $this->mesuremetsToArray($soilMoistureRepository->findByPlanterId($id));
+        $airTemperatureData = $this->mesuremetsToArray($this->airTemperatureRepository->findByPlanterIdAndDate($planterId, $from));
+        $airHumidityData = $this->mesuremetsToArray($this->airHumidityRepository->findByPlanterIdAndDate($planterId, $from));
+        $waterLevelData = $this->mesuremetsToArray($this->waterLevelRepository->findByPlanterIdAndDate($planterId, $from));
+        $lightLevelData = $this->mesuremetsToArray($this->lightLevelRepository->findByPlanterIdAndDate($planterId, $from));
+        $soilMoistureData = $this->mesuremetsToArray($this->soilMoistureRepository->findByPlanterIdAndDate($planterId, $from));
 
         return $this->render('planter/detail.html.twig', [
             'planter' => $planter,
@@ -144,31 +183,15 @@ class PlanterController extends BaseController
     }
 
     /**
-     * @Route("/planter/edit/{id}", name="planter_edit")
+     * @Route("/planter/edit/{planterId}", name="planter_edit")
      */
-    public function edit(
-        LightLevelRepository $LightLevelRepository,
-
-        Request $request,
-        PlantPresetsRepository $plantPresetsRepository,
-        PlanterRepository $planterRepository,
-        $id): Response
+    public function edit(Request $request, $planterId): Response
     {
-        $userId = $this->getUser()->getId();
-        $planter = $planterRepository->findOneById($id);
-        $planterId = $planter->getId();
-
-
-        $from = new \DateTime();
-        $from->sub(new DateInterval('PT1H'));
-        $from->setTime(0,0,0);
-        $to = $from;
-        $to->setTime(23,59,59);
 
 
         $userId = $this->getUser()->getId();
-        $presets = $plantPresetsRepository->findByUserId($userId);
-        $planter = $planterRepository->findOneById($id);
+        $presets = $this->plantPresetsRepository->findByUserId($userId);
+        $planter = $this->planterRepository->findOneById($planterId);
         $form = $this->createForm(PlanterFormType::class ,$planter, ['trait_choices' => $presets]);
         $form->add( 'delete', SubmitType::class, ['label' => 'delete']);
         $form->handleRequest($request);
@@ -183,7 +206,7 @@ class PlanterController extends BaseController
                 return $this->redirectToRoute('planter');
             }else{
                 $name = $form->get('name')->getData();
-                if (!empty($planterRepository->findPlantersWithSameName($userId,$name, $planter->getId()))){
+                if (!empty($this->planterRepository->findPlantersWithSameName($userId,$name, $planter->getId()))){
                     $this->addFlash('danger', 'You already have planter with this name.');
                 }else{
                     $planter->setName($form->get('name')->getData());

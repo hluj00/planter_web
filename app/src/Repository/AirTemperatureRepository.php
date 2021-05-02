@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AirTemperature;
+use DateTimeZone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,12 +23,33 @@ class AirTemperatureRepository extends ServiceEntityRepository
     /**
      * @return AirTemperature[] Returns an array of AirTemperature objects
      */
-    public function findByPlanterId($value)
+    public function findByPlanterIdAndDate($id, $from)
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.planter_id = :val')
-            ->setParameter('val', $value)
+            ->andWhere('a.date > :date')
+            ->setParameter('val', $id)
+            ->setParameter('date', $from)
             ->orderBy('a.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return AirTemperature[] Returns an array of AirTemperature objects
+     */
+    public function findLastInTenMinutes($value)
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $date->modify('-10 minutes');
+
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.planter_id = :val')
+            ->andWhere('a.date > = :date')
+            ->setParameter('val', $value)
+            ->setParameter('date', $date)
+            ->orderBy('a.date', 'DESC')
+            ->setMaxResults(1)
             ->getQuery()
             ->getResult();
     }
@@ -45,6 +67,21 @@ class AirTemperatureRepository extends ServiceEntityRepository
                 ->setParameter('to', $to)
                 ->setParameter('id', $id)
                 ->setParameter('val', $value)
+                ->getQuery()
+                ;
+
+            return $result->getResult();
+    }
+    /**
+     * @return AirTemperature[] Returns an array of AirTemperature objects
+     */
+    public function findByPlanterIdDate($id, $from)
+    {
+            $result = $this->createQueryBuilder('a')
+                ->andWhere('a.planter_id = :id')
+                ->andWhere('a.date > :from ')
+                ->setParameter('from', $from)
+                ->setParameter('id', $id)
                 ->getQuery()
                 ;
 

@@ -28,6 +28,7 @@
             <div class="form-group">
                 {{ form_label((form.ifttt_endpoint)) }}
                 {{ form_widget(form.ifttt_endpoint, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors((form.ifttt_endpoint)) }}
             </div>
             {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
             {{ form_end(form) }}

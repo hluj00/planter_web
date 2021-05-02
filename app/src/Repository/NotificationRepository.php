@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
+use DateTimeZone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,9 +20,11 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-     /**
-      * @return Notification[] Returns an array of Notification objects
-      */
+    /**
+     * @param $send
+     * @param $date
+     * @return Notification[] Returns an array of Notification objects
+     */
     public function findBySendAndDate($send, $date): array
     {
         return $this->createQueryBuilder('n')
@@ -35,16 +38,44 @@ class NotificationRepository extends ServiceEntityRepository
         ;
     }
 
-     /**
-      * @return Notification[] Returns an array of Notification objects
-      */
-    public function findByUserIdDateAndType($userId, $date, $type): array
+    /**
+     * @param $planterId
+     * @param $date
+     * @param $type
+     * @return Notification[] Returns an array of Notification objects
+     */
+    public function findNewest($planterId, $date, $type): array
     {
         return $this->createQueryBuilder('n')
-            ->andWhere('n.user_id = :val')
+            ->andWhere('n.planter_id = :val')
             ->andWhere('n.type = :type')
             ->andWhere('n.created_at > :date')
-            ->setParameter('val', $userId)
+            ->setParameter('val', $planterId)
+            ->setParameter('type', $type)
+            ->setParameter('date', $date)
+            ->orderBy('n.created_at', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @param $planterId
+     * @param $type
+     * @return Notification[] Returns an array of Notification objects
+     * @throws \Exception
+     */
+    public function findTodayNotifications($planterId, $type): array
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $date->setTime(0,0,0);
+
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.planter_id = :planter')
+            ->andWhere('n.type = :type')
+            ->andWhere('n.created_at > :date')
+            ->setParameter('planter', $planterId)
             ->setParameter('type', $type)
             ->setParameter('date', $date)
             ->orderBy('n.id', 'ASC')
