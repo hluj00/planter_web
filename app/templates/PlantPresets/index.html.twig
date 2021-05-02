@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="content-wrapper text-center">
-    <h1>plant presets</h1>
+    <h1>Plant presets</h1>
 <div>
     <div class="table-wrapper">
         <table class="fl-table">
@@ -19,6 +19,11 @@
             </tr>
             </thead>
             <tbody>
+            {% if  settings is empty %}
+                <tr>
+                    <td colspan="6">you don't have any plant presets yet :(</td>
+                </tr>
+            {% endif %}
             {% for c in settings %}
                 <tr>
                     <td>{{ c.name }}</td>
@@ -29,7 +34,7 @@
                     <td><a class="btn btn-dark btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edit</a></td>
                 </tr>
             {% endfor %}
-            <tbody>
+            </tbody>
         </table>
     </div>
     <a class="btn btn-primary btn-block" href="{{ path('plant_presets_new') }}">add new</a>

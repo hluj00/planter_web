@@ -64,7 +64,7 @@ class RegistrationController extends AbstractController
                 $settings->setNotificationPeriodType(UserSettings::$PERIOD_LAST_24H);
                 $entityManager->persist($settings);
                 $entityManager->flush();
-                return $this->redirectToRoute('login');
+                return $this->redirectToRoute('app_login');
             }else{
                 $form->get('username')->addError(new FormError('this username already exists'));
             }
