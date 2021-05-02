@@ -150,9 +150,9 @@ class PrepareNotificationsCommand extends Command
         if ($notificationAlreadyCreated)
             return false;
 
-        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
-        $date->setTime(0,0,0);
-        $result = $this->notificationRepository->findNewest($planterId ,$date ,Notification::$TYPE_TEMPERATURE);
+        $from = new \DateTime('now', new DateTimeZone('Europe/Prague'));;
+        $from->modify('-1 day');
+        $result = $this->notificationRepository->findNewest($planterId ,$from ,Notification::$TYPE_TEMPERATURE);
         if ( isset($result[0]) ){
             $lastNotif = $result[0]->getCreatedAt();
             $temperatures = $this->airTemperatureRepository->findByPlanterIdDate($planterId, $lastNotif);

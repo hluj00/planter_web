@@ -56,7 +56,7 @@ class RegistrationController extends AbstractController
             $time = new \DateTime();
             $time->setTime(21,0,0);
             $settings->setSendNotificationsAt($time);
-            $settings->setNotificationPeriodType(Notification::$PERIOD_LAST_24H);
+            $settings->setNotificationPeriodType(UserSettings::$PERIOD_LAST_24H);
             $entityManager->persist($settings);
             $entityManager->flush();
             return $this->redirectToRoute('login');
