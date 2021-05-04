@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Notification;
 use App\Entity\Planter;
 use App\Entity\PlantPresets;
+use App\Entity\UserSettings;
 use App\Form\PlanterFormType;
 use App\Repository\AirHumidityRepository;
 use App\Repository\AirTemperatureRepository;
@@ -13,6 +14,7 @@ use App\Repository\NotificationRepository;
 use App\Repository\PlanterRepository;
 use App\Repository\PlantPresetsRepository;
 use App\Repository\SoilMoistureRepository;
+use App\Repository\UserSettingsRepository;
 use App\Repository\WaterLevelRepository;
 use DateInterval;
 use DateTimeZone;
@@ -37,6 +39,7 @@ class PlanterController extends BaseController
     private $airHumidityRepository;
     private $lightLevelRepository;
     private $soilMoistureRepository;
+    private $userSettingsRepository;
 
     public function __construct(
         PlanterRepository $planterRepository,
@@ -46,7 +49,8 @@ class PlanterController extends BaseController
         NotificationRepository $notificationRepository,
         AirHumidityRepository $airHumidityRepository,
         LightLevelRepository $lightLevelRepository,
-        SoilMoistureRepository $soilMoistureRepository
+        SoilMoistureRepository $soilMoistureRepository,
+        UserSettingsRepository $userSettingsRepository
     )
     {
         $this->planterRepository = $planterRepository;
@@ -57,6 +61,7 @@ class PlanterController extends BaseController
         $this->airHumidityRepository = $airHumidityRepository;
         $this->lightLevelRepository = $lightLevelRepository;
         $this->soilMoistureRepository = $soilMoistureRepository;
+        $this->userSettingsRepository = $userSettingsRepository;
     }
 
     /**
@@ -65,12 +70,19 @@ class PlanterController extends BaseController
     public function index(): Response
     {
         $userId = $this->getUser()->getId();
+        $userSetings = $this->userSettingsRepository->findOneByUserId($userId);
+
 
 
         $planters = $this->planterRepository->findByUserId($userId);
         $presets = $this->plantPresetsRepository->findByUserId($userId);
         $presetArray = [];
         $data = [];
+        $notificationTime = $userSetings->getSendNotificationsAt()->format("hi");
+        $now = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $now = $now->format("hi");
+
+
 
         foreach ($presets as $preset){
             $presetArray[$preset->getId()] = $preset;
@@ -87,17 +99,22 @@ class PlanterController extends BaseController
             $data[$planterId]['waterLevel'] = $water;
 
             $preset = $presetArray[$planter->getPlantPresetsId()];
-            $lightNotifications = $this->notificationRepository->findTodayNotifications($planterId, Notification::$TYPE_LIGHT_LEVEL);
+
+            if ($now < $notificationTime) {
+                $lightNotifications = $this->notificationRepository->findYesterdayNotifications($planterId, Notification::$TYPE_LIGHT_LEVEL);
+            } else {
+                $lightNotifications = $this->notificationRepository->findTodayNotifications($planterId, Notification::$TYPE_LIGHT_LEVEL);
+            }
+
 
 
             $data[$planterId]['lowTemperature'] = ($temp != '--' && $preset->getTemperature() > $temp);
             $data[$planterId]['lowWater'] = ($temp != '--' &&  $water < 15);
-            $data[$planterId]['lowLight'] = !empty($lightNotifications);
+            $data[$planterId]['lowLight'] =  !empty($lightNotifications) ;
         }
 
 
 
-        dump($data);
         return $this->render('planter/index.html.twig', [
             'controller_name' => 'PlanterController',
             'planters' => $planters,

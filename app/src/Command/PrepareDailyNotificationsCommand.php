@@ -96,7 +96,7 @@ class PrepareDailyNotificationsCommand extends Command
             $nowHour = $now->format('H');
 
 
-            if ( true || $sendAtHour - $nowHour == 1) {
+            if ( $sendAtHour - $nowHour == 1) {
                 foreach ($planters as $planter) {
                     $planterId = $planter->getId();
                     $plantPresets = $this->plantPresetsRepository->findOneById($planter->getPlantPresetsId());
@@ -126,6 +126,9 @@ class PrepareDailyNotificationsCommand extends Command
         $notification->setSend(false);
         $this->entityManager->persist($notification);
         $this->entityManager->flush();
+
+        $message = sprintf("creating low light notification for planter ID: %s", $planterId);
+        $this->log($message);
     }
 
 
@@ -161,8 +164,6 @@ class PrepareDailyNotificationsCommand extends Command
                 $timeTotal += $time2 - $time1;
             }
         }
-        $message = sprintf("creating low light notification for planter ID: %s", $planterId);
-        $this->log($message);
 
         return($timeTotal < $minTime);
     }

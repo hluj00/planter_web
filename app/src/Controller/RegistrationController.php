@@ -18,16 +18,21 @@ use Symfony\Component\Validator\Constraints\Time;
 class RegistrationController extends AbstractController
 {
     private $userRepository;
+    private $passwordEncoder;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        UserPasswordEncoderInterface $passwordEncoder
+    )
     {
         $this->userRepository = $userRepository;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     /**
      * @Route("/register", name="app_register")
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function register(Request $request): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -40,7 +45,7 @@ class RegistrationController extends AbstractController
 
                 // encode the plain password
                 $user->setPassword(
-                    $passwordEncoder->encodePassword(
+                    $this->passwordEncoder->encodePassword(
                         $user,
                         $form->get('plainPassword')->getData()
                     )

@@ -5,39 +5,39 @@
 {% block body %}
 <div class="content-wrapper text-center">
     <h1>Plant presets</h1>
-<div>
-    <div class="table-wrapper">
-        <table class="fl-table">
-            <thead>
-            <tr>
-                <th>name</th>
-                <th>moisture</th>
-                <th>temperature</th>
-                <th>min light level</th>
-                <th>light duration</th>
-                <th>edit</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if  settings is empty %}
-                <tr>
-                    <td colspan="6">you don't have any plant presets yet :(</td>
-                </tr>
-            {% endif %}
-            {% for c in settings %}
-                <tr>
-                    <td>{{ c.name }}</td>
-                    <td>{{ c.moisture}} %</td>
-                    <td>{{ c.temperature }} °C</td>
-                    <td>{{ c.lightLevel }} lux</td>
-                    <td>{{ c.lightDuration}} h</td>
-                    <td><a class="btn btn-dark btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edit</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <a class="btn btn-primary btn-block" href="{{ path('plant_presets_new') }}">add new</a>
     <div>
+        <div class="table-wrapper">
+            <table class="fl-table">
+                <thead>
+                <tr>
+                    <th>name</th>
+                    <th>moisture</th>
+                    <th>temperature</th>
+                    <th>min light level</th>
+                    <th>light duration</th>
+                    <th>action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if  settings is empty %}
+                    <tr>
+                        <td colspan="7">you don't have any plant presets yet :(</td>
+                    </tr>
+                {% endif %}
+                {% for c in settings %}
+                    <tr>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.moisture}} %</td>
+                        <td>{{ c.temperature }} °C</td>
+                        <td>{{ c.lightLevel }} lux</td>
+                        <td>{{ c.lightDuration}} h</td>
+                        <td><a class="btn btn-dark btn-sm" href="{{ path('plant_presets_edit' , {id: c.id}) }}">edit</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a class="btn btn-primary btn-block" href="{{ path('plant_presets_new') }}">add new</a>
+        </div>
 </div>
 {% endblock %}

@@ -36,7 +36,6 @@ class PairController extends BaseController
     public function index(Request $request): Response
     {
         $id = $request->get('id');
-        dump($id);
 
 
 
@@ -44,7 +43,6 @@ class PairController extends BaseController
         $planterId = is_null($planter) ? null : sprintf("planter%d",$planter->getId());
         $userHash = $this->getUser()->getHash();
 
-        dump($planterId,$userHash);
 
         $userId = $this->getUser()->getId();
         $planters = $this->planterRepository->findByUserId($userId);

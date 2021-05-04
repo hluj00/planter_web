@@ -84,6 +84,31 @@ class NotificationRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @param $planterId
+     * @param $type
+     * @return Notification[] Returns an array of Notification objects
+     * @throws \Exception
+     */
+    public function findYesterdayNotifications($planterId, $type): array
+    {
+        $date = new \DateTime('now', new DateTimeZone('Europe/Prague'));
+        $date->setTime(0,0,0);
+        $date->modify("-1 day");
+
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.planter_id = :planter')
+            ->andWhere('n.type = :type')
+            ->andWhere('n.created_at > :date')
+            ->setParameter('planter', $planterId)
+            ->setParameter('type', $type)
+            ->setParameter('date', $date)
+            ->orderBy('n.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 
     /*
     public function findOneBySomeField($value): ?Notification

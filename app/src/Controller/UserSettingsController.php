@@ -11,29 +11,28 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserSettingsController extends BaseController
 {
+    private $userSettingsRepository;
+
+    public function __construct(
+        UserSettingsRepository $userSettingsRepository
+    )
+    {
+        $this->userSettingsRepository = $userSettingsRepository;
+    }
+
     /**
      * @Route("/user/settings", name="user_settings")
      */
-    public function index(
-        UserSettingsRepository $userSettingsRepository,
-        Request $request
-    ): Response
+    public function index(Request $request): Response
     {
         $userId = $this->getUser()->getId();
-        $userSettings = $userSettingsRepository->findOneByUserId($userId);
-//        dump($userSettings);
+        $userSettings = $this->userSettingsRepository->findOneByUserId($userId);
         $form = $this->createForm(UserSettingsFormType::class, $userSettings);
         $form->handleRequest($request);
 
-        dump($form->getErrors());
         if ($form->isSubmitted() && $form->isValid()) {
-//            dump($form->get('send_notifications_at')->getData());
-//            dump($form->get('send_notifications')->getData());
 
             $sendNotifications = $form->get('send_notifications')->getData() ? 1 : 0;
-//            if($sendNotifications){
-//            $form->addError(new F)
-//            }
 
             $userSettings->setSendNotificationsAt($form->get('send_notifications_at')->getData());
             $userSettings->setSendNotifications($sendNotifications);

@@ -66,7 +66,7 @@ class UserSettingsFormType extends AbstractType
             $sendNotif = ($form->get('send_notifications')->getData());
             $url = ($form->get('ifttt_endpoint')->getData());
             if ($sendNotif && empty($url)){
-                $form->get("ifttt_endpoint")->addError(new FormError('Field error!'));
+                $form->get("ifttt_endpoint")->addError(new FormError('ifttt api needs to be set, if you want notifications.'));
             }
         });
     }
