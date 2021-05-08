@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Action
 {
+    public static $ACTION_RUN_PUMP = 1;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

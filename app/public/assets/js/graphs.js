@@ -9,9 +9,6 @@ function stringToDate(arr){
 
 function drawCurveTypes() {
 
-
-
-
     stringToDate(airHumidityData);
     stringToDate(airTemperatureData);
     stringToDate(waterLevelData);
@@ -114,14 +111,18 @@ function drawCurveTypes() {
 
 
     var AirTempChart = new google.visualization.LineChart(document.getElementById('ChartAirTemp'));
-    var AirHumChart = new google.visualization.LineChart(document.getElementById('ChartAirHum'));
-    var waterLvlChart = new google.visualization.LineChart(document.getElementById('ChartwaterLvl'));
-    var lightLvlChart = new google.visualization.LineChart(document.getElementById('ChartlightLvl'));
-    var soilMoistChart = new google.visualization.LineChart(document.getElementById('ChartsoilMoist'));
-
     AirTempChart.draw(airTempData, AirTempOptions);
+
+    var AirHumChart = new google.visualization.LineChart(document.getElementById('ChartAirHum'));
     AirHumChart.draw(airHumData, AirHumOptions);
+
+    var waterLvlChart = new google.visualization.LineChart(document.getElementById('ChartwaterLvl'));
     waterLvlChart.draw(waterLvlData, waterLvlOptions);
+
+    var lightLvlChart = new google.visualization.LineChart(document.getElementById('ChartlightLvl'));
     lightLvlChart.draw(lightLvlData, lightLvlOptions);
+
+    var soilMoistChart = new google.visualization.LineChart(document.getElementById('ChartsoilMoist'));
     soilMoistChart.draw(soilMoistData, soilMoistOptions);
+
 }

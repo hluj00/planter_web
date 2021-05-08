@@ -37,7 +37,6 @@ class PlantPresetsController extends BaseController
 
     /**
      * @Route("/plant-presets", name="plant_presets")
-     * @param PlantPresetsRepository $settingsPlantRepository
      * @return Response
      */
     public function index(): Response
@@ -46,7 +45,6 @@ class PlantPresetsController extends BaseController
 
         return $this->render('PlantPresets/index.html.twig', [
             'settings' => $settings,
-            'controller_name' => "pica"
         ]);
     }
 

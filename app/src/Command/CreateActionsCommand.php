@@ -45,9 +45,7 @@ class CreateActionsCommand extends Command
     private $entityManager;
 
     protected static $defaultName = 'app:create-actions';
-    protected static $defaultDescription = 'Add a short description for your command';
-
-    protected static $ACTION_RUN_PUMP = 1;
+    protected static $defaultDescription = 'Creates actions that should be executed eg. run pump';
 
 
     public function __construct(
@@ -59,23 +57,18 @@ class CreateActionsCommand extends Command
         ActionRepository $actionRepository
     )
     {
+        parent::__construct($name);
         $this->planterRepository = $planterRepository;
         $this->plantPresetsRepository = $plantPresetsRepository;
         $this->soilMoistureRepository = $soilMoistureRepository;
         $this->actionRepository = $actionRepository;
         $this->entityManager = $entityManager;
-
-        parent::__construct($name);
     }
 
 
     protected function configure()
     {
-        $this
-            ->setDescription(self::$defaultDescription)
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-        ;
+        $this->setDescription(self::$defaultDescription);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -92,13 +85,9 @@ class CreateActionsCommand extends Command
             }
 
             $lowMoisture = $this->lowMoisture($planter->getId(), $plantPreset);
-            $actionExists = $this->unexecutedActionExits($planter->getId(),1);
+            $actionExists = $this->unexecutedActionExits($planter->getId(),Action::$ACTION_RUN_PUMP);
             if ($lowMoisture && !$actionExists){
-                echo "vytvari \n";
                 $this->createAction($planter->getId());
-            }else{
-                echo $actionExists ? "exituje" : "neexistuje";
-                echo "\nNEvytvari \n";
             }
         }
 
@@ -133,7 +122,7 @@ class CreateActionsCommand extends Command
     protected function createAction($planterId){
         $now = new \DateTime('now', new DateTimeZone('Europe/Prague'));
         $action = new Action();
-        $action->setType(self::$ACTION_RUN_PUMP);
+        $action->setType(Action::$ACTION_RUN_PUMP);
         $action->setCreatedAt($now);
         $action->setPlanterId($planterId);
         $action->setExecuted(false);
