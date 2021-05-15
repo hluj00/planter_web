@@ -101,14 +101,6 @@ class CreateActionsCommand extends Command
 
         $soilMoisture = $this->soilMoistureRepository->findLastByPlanterIdAndDate($planterId, $date);
         $limit = $plantPreset->getMoisture();
-        echo $limit;
-        if (is_null($soilMoisture)){
-            echo "NULL\n";
-        }else{
-            echo "\n";
-            echo $soilMoisture->getValue();
-            echo $soilMoisture->getValue() < $limit ? "cura\n" : "necura\n";
-        }
 
         return (!is_null($soilMoisture) && $soilMoisture->getValue() < $limit);
     }
