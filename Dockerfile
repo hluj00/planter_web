@@ -20,3 +20,4 @@ WORKDIR /var/www/html/app
 #RUN composer install
 COPY ./php.ini /usr/local/etc/php/
 RUN chown -R www-data:www-data /var/www/html/
+RUN composer install --no-scripts --no-autoloader
