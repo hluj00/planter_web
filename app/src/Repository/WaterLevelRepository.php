@@ -41,15 +41,13 @@ class WaterLevelRepository extends ServiceEntityRepository
      /**
       * @return WaterLevel[] Returns an array of WaterLevel objects
       */
-    public function findByPlanterIdAndDate($id, $from, $to)
+    public function findByPlanterIdAndDate($id, $from)
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.planter_id = :val')
             ->andWhere('a.date > :date')
-            ->andWhere('a.date < :to')
             ->setParameter('val', $id)
             ->setParameter('date', $from)
-            ->setParameter('to', $to)
             ->orderBy('a.id', 'ASC')
             ->getQuery()
             ->getResult();

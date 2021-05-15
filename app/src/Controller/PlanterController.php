@@ -170,16 +170,13 @@ class PlanterController extends BaseController
         $from = new \DateTime();
         $from->modify('-5 days');
 
-        $to = new \DateTime();
-        $to->modify('-2 days');
-
         $planter = $this->planterRepository->findOneById($planterId);
 
         $airTemperatureData = $this->mesuremetsToArray($this->airTemperatureRepository->findByPlanterIdAndDate($planterId, $from));
         $airHumidityData = $this->mesuremetsToArray($this->airHumidityRepository->findByPlanterIdAndDate($planterId, $from));
-        $waterLevelData = $this->mesuremetsToArray($this->waterLevelRepository->findByPlanterIdAndDate($planterId, $from, $to));
+        $waterLevelData = $this->mesuremetsToArray($this->waterLevelRepository->findByPlanterIdAndDate($planterId, $from));
         $lightLevelData = $this->mesuremetsToArray($this->lightLevelRepository->findByPlanterIdAndDate($planterId, $from));
-        $soilMoistureData = $this->mesuremetsToArray($this->soilMoistureRepository->findByPlanterIdAndDate($planterId, $from, $to));
+        $soilMoistureData = $this->mesuremetsToArray($this->soilMoistureRepository->findByPlanterIdAndDate($planterId, $from));
 
         return $this->render('planter/detail.html.twig', [
             'planter' => $planter,
